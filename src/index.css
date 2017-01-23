@@ -1,0 +1,16 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+.SocialGraph {
+    width: 100vw;
+    height: 90vh;
+}
+
+.Graph .links {
+    stroke: #999;
+    opacity: 0.5;
+}
+
