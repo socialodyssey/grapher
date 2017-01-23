@@ -2,11 +2,13 @@
   "name": "odyssey-grapher",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://socialodyssey.github.io/graph",
   "devDependencies": {
     "react-scripts": "0.8.5"
   },
   "dependencies": {
     "d3": "^4.4.3",
+    "gh-pages": "^0.12.0",
     "react": "^15.4.2",
     "react-dom": "^15.4.2"
   },
@@ -14,6 +16,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "yarn run build",
+    "deploy": "gh-pages -d build"
   }
 }
