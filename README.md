@@ -1,1 +1,1 @@
-http://socialodyssey.github.io/graph
+http://socialodyssey.github.io/grapher

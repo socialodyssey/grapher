@@ -9,6 +9,10 @@ body {
     height: 90vh;
 }
 
+.SocialStats {
+    text-align: left;
+}
+
 .Graph .links {
     stroke: #999;
     opacity: 0.5;

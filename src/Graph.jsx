@@ -15,7 +15,7 @@ class Graph extends React.Component {
 
       const zoom = d3
         .zoom()
-        .scaleExtent([1, 8])
+        .scaleExtent([0, 8])
         .on('zoom', () => {
           container.attr("transform", d3.event.transform)
         })
@@ -26,7 +26,7 @@ class Graph extends React.Component {
 
       const simulation = d3.forceSimulation()
                            .force('link', d3.forceLink().id((d) => d.id))
-                           .force('charge', d3.forceManyBody().strength(-600))
+                           .force('charge', d3.forceManyBody().strength(-3000))
                            .force('center', d3.forceCenter(width / 2, height / 2))
 
       const link = container.append('g')
@@ -61,8 +61,8 @@ class Graph extends React.Component {
                       })
 
       node.append('circle')
-                      .attr('r', (d) => 10)
-                      .attr('fill', (d) => '#000')
+                     .attr('r', (d) => Math.max(4, (0.4 * d.centrality)))
+                     .attr('fill', (d) => '#abc')
                      .call(drag)
 
       node.append('text')
@@ -99,7 +99,7 @@ class Graph extends React.Component {
 
   render() {
     return (
-      <svg className="Graph" ref="svg" width="900" height="800" />
+      <svg className="Graph" ref="svg" width={this.props.width} height={this.props.height} />
     )
   }
 }

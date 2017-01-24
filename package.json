@@ -2,7 +2,7 @@
   "name": "odyssey-grapher",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://socialodyssey.github.io/graph",
+  "homepage": "https://socialodyssey.github.io/grapher",
   "devDependencies": {
     "react-scripts": "0.8.5"
   },
