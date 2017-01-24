@@ -8,7 +8,7 @@ class SocialGraph extends React.Component {
     super(props);
 
     this.state = {
-      width: window.innerWidth   * 0.9,
+      width: window.innerWidth,
       height: window.innerHeight * 0.66
     }
   }
