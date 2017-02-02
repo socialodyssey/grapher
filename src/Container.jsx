@@ -15,6 +15,37 @@ function filterBy(key, a, b) {
   }
 }
 
+function mapCentralityFor(interactions) {
+  return entity => {
+    const centrality = interactions
+      .filter((link) =>
+        (
+          (link.target === entity.id) ||
+          (link.source === entity.id)))
+      .length
+
+    return {
+      ...entity,
+      centrality
+    }
+  }
+}
+
+function transformEntity(entity) {
+  return {
+    id: entity._id,
+    ...entity
+  }
+} 
+
+function transformInteraction({ _from, _to, ...rest }) {
+  return {
+    source: _from,
+    target: _to,
+    ...rest
+  }
+}
+
 class Container extends React.Component {
   constructor(props) {
     super(props);
@@ -46,27 +77,8 @@ class Container extends React.Component {
   //       in future.
   //
   fetchData() {
-    const transformedEntities = entities
-      .map((entity) => {
-
-        const centrality = interactions
-          .filter((link) =>
-            ((link._to === entity._id) || (link._from === entity._id)))
-          .length
-
-        return {
-          id: entity._id,
-          centrality,
-          ...entity
-        }
-      })
-
-    const transformedInteractions = interactions
-      .map(({ _from, _to, ...rest }) => ({
-        source: _from,
-        target: _to,
-        ...rest
-      }))
+    const transformedInteractions = interactions.map(transformInteraction)
+    const transformedEntities     = entities.map(transformEntity).map(mapCentralityFor(transformedInteractions))
 
     const graphData = {
       nodes: transformedEntities,
@@ -82,11 +94,19 @@ class Container extends React.Component {
   handleRangeChange(newValue) {
     const { graphData } = this.state;
 
+    const newLinks = graphData.links
+                              .filter(filterBy('book', newValue.min, newValue.max))
+
+                              // TODO: Figure out why this map is necessary.
+                              // How is d3 modifying the links even when I clone the array?
+                              .map((link) => ({ id: link.id, source: link.source.id, target: link.target.id }))
+    const newNodes = graphData.nodes.map(mapCentralityFor(newLinks))
+
     const filteredData = Object.assign(
       {},
       {
-        nodes: graphData.nodes,
-        links: graphData.links.filter(filterBy('book', newValue.min, newValue.max))
+        nodes: newNodes,
+        links: newLinks
       }
     )
 

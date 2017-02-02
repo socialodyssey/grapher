@@ -92,7 +92,8 @@ class Graph extends React.Component {
                       .attr('stroke', 'none')
                       .text((d) => d.name)
 
-      simulation.restart()
+      simulation
+          .restart()
           .nodes(nodes)
           .on('tick', () => {
              link
