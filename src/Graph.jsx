@@ -2,8 +2,36 @@ import React from 'react'
 import * as d3 from 'd3';
 
 class Graph extends React.Component {
-  componentDidUpdate(prevProps) {
+  componentDidMount() {
+    const svg    = d3.select(this.refs['svg']);
+    const width  = parseInt(svg.attr('width'));
+    const height = parseInt(svg.attr('height'));
 
+    // Add container group tag
+    const container = svg
+      .append('g')
+      .attr('class', 'container')
+
+    // Add link and node groups
+    container
+      .append('g')
+      .attr('class', 'links')
+
+    container
+      .append('g')
+      .attr('class', 'nodes')
+
+    // Set up zooming/panning
+    const zoom = d3
+      .zoom()
+      .scaleExtent([0, 8])
+      .on('zoom', () => {
+        container.attr("transform", d3.event.transform)
+      })
+    svg.call(zoom)
+  }
+
+  componentDidUpdate(prevProps) {
     if(prevProps.data !== this.props.data) {
       const svg    = d3.select(this.refs['svg']);
       const width  = parseInt(svg.attr('width'));
@@ -11,34 +39,27 @@ class Graph extends React.Component {
 
       const { nodes, links } = this.props.data;
 
-      const container = svg.append('g')
-
-      const zoom = d3
-        .zoom()
-        .scaleExtent([0, 8])
-        .on('zoom', () => {
-          container.attr("transform", d3.event.transform)
-        })
-
-
-      svg.call(zoom)
-
+      const container = svg.select('.container');
 
       const simulation = d3.forceSimulation()
                            .force('link', d3.forceLink().id((d) => d.id))
                            .force('charge', d3.forceManyBody().strength(-3000))
                            .force('center', d3.forceCenter(width / 2, height / 2))
+                           .velocityDecay(0.8)
 
-      const link = container.append('g')
-                      .attr('class', 'links')
+      container.select('.links').selectAll('line').remove()
+      container.select('.nodes').selectAll('.node').remove()
+
+      const link = container
+                      .select('.links')
                       .selectAll('line')
                       .data(links)
                       .enter()
                       .append('line')
                       .attr('stroke-width', (d) => 1)
 
-      const node = container.append('g')
-                      .attr('class', 'nodes')
+      const node = container
+                      .select('.nodes')
                       .selectAll('.node')
                       .data(nodes)
                       .enter().append('g')
@@ -71,7 +92,7 @@ class Graph extends React.Component {
                       .attr('stroke', 'none')
                       .text((d) => d.name)
 
-      simulation
+      simulation.restart()
           .nodes(nodes)
           .on('tick', () => {
              link
