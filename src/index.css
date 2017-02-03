@@ -13,9 +13,12 @@ body {
     text-align: left;
 }
 
-.Graph .links {
-    stroke: #999;
-    opacity: 0.5;
+.Graph text {
+    pointer-events: none;
+}
+
+.Graph circle {
+    cursor: pointer;
 }
 
 .RangeSlider {
