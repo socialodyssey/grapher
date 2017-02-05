@@ -185,18 +185,19 @@ class Container extends React.Component {
             showBridges={graphConfig['show-bridges']}
         />
 
-        <RangeSlider
-            handleChange={this.handleRangeChange}
-            min={1}
-            max={this.state.sliderMax}
-            value={sliderValue} />
+        <div className="control-panel">
+          <RangeSlider
+              handleChange={this.handleRangeChange}
+              min={1}
+              max={this.state.sliderMax}
+              value={sliderValue} />
+          <GraphConfig
+              handleChange={this.handleGraphConfigChange}
+              current={graphConfig} />
 
-        <GraphConfig
-            handleChange={this.handleGraphConfigChange}
-            current={graphConfig} />
-
-        <SocialStats
-            data={filteredData} />
+          <SocialStats
+              data={filteredData} />
+        </div>
       </div>
     )
   }

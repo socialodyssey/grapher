@@ -2,12 +2,12 @@ import React from 'react'
 import * as d3 from 'd3';
 
 const colors = {
-  circleFill:   '#abc',
-  circleHlFill: '#e5efff',
-  circleHlStroke: '#f7ff21',
+  circleFill:   '#5BC0EB',
+  circleHlFill: '#91d5f2',
+  circleHlStroke: '#FDE74C',
   line:   '#bababa',
-  lineHl: '#f7ff21',
-  lineBridge: '#ff3838'
+  lineHl: '#FDE74C',
+  lineBridge: '#C3423F'
 };
 
 
