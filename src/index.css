@@ -34,7 +34,10 @@ html, body {
 
 .GraphConfig {
     width: 50vw;
-    text-align: right;
+    text-align: left;
     float: right;
+    margin: 1em;
+    padding: 2em;
+    border: 2px solid black;
 }
 

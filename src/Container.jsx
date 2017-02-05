@@ -19,16 +19,24 @@ function filterBy(key, a, b) {
 
 function mapCentralityFor(interactions) {
   return entity => {
-    const centrality = interactions
+    const outCent = interactions
       .filter((link) =>
         (
-          (link.target === entity.id) ||
           (link.source === entity.id)))
+      .length
+    
+    const inCent = interactions
+      .filter((link) =>
+        (
+          (link.target === entity.id)))
       .length
 
     return {
       ...entity,
-      centrality
+      centrality: {
+        out: outCent,
+        in:  inCent
+      }
     }
   }
 }

@@ -195,8 +195,11 @@ class Graph extends React.Component {
       .scaleLinear()
       .domain([
         0,
-        d3.max(nodes, (d) => d.centrality)
+        d3.max(nodes, (d) => d.centrality.out + d.centrality.in)
       ])
+
+    const radiusRange = [1, 70];
+    const strokeRange = [1, 5];
 
     let node = container
       .select('.nodes')
@@ -217,9 +220,9 @@ class Graph extends React.Component {
     
     node
       .append('circle')
-      .attr('r', (d) => scaleCentrality.range([1, 70])(d.centrality))
+      .attr('r', (d) => scaleCentrality.range(radiusRange)(d.centrality.in + d.centrality.out))
       .attr('fill', (d) => colors.circleFill)
-      .attr('stroke-width', (d) => scaleCentrality.range([1, 5])(d.centrality))
+      .attr('stroke-width', (d) => scaleCentrality.range(strokeRange)(d.centrality.in + d.centrality.out))
       .call(this.d3Drag)
 
     node
@@ -227,6 +230,7 @@ class Graph extends React.Component {
       .attr('class', 'label')
       .attr('fill', 'black')
       .attr('stroke', 'none')
+      .attr('font-weight', 'bold')
       .text((d) => d.name)
 
     let link = container
@@ -256,20 +260,26 @@ class Graph extends React.Component {
       .nodes(nodes)
       .on('tick', () => {
         link
-          .attr("x1", function(d) { return d.source.x; })
-          .attr("y1", function(d) { return d.source.y; })
-          .attr("x2", function(d) { return d.target.x; })
-          .attr("y2", function(d) { return d.target.y; });
+          .attr("x1", d => d.source.x)
+          .attr("y1", d => d.source.y)
+          .attr("x2", d => d.target.x)
+          .attr("y2", d => d.target.y);
 
         node
           .selectAll('circle')
-          .attr("cx", function(d) { return d.x; })
-          .attr("cy", function(d) { return d.y; });
+          .attr("cx", d => d.x)
+          .attr("cy", d => d.y);
         
         node
           .selectAll('.label')
-          .attr("dx", function(d) { return d.x + 10; })
-          .attr("dy", function(d) { return d.y + 5; });
+          .attr("dx", d => {
+            const centrality = d.centrality.in + d.centrality.out;
+
+            return d.x + scaleCentrality.range(radiusRange)(centrality) + 4;
+          })
+          .attr("dy", d => {
+            return d.y + 6
+          });
       });
 
     this.d3Simulation
