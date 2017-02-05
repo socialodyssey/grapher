@@ -61,8 +61,9 @@ class Container extends React.Component {
       },
       sliderValue: {
         min: 1,
-        max: 24
-      }
+        max: 2
+      },
+      sliderMax: 2
     }
 
     this.fetchData = this.fetchData.bind(this);
@@ -80,6 +81,9 @@ class Container extends React.Component {
     const transformedInteractions = interactions.map(transformInteraction)
     const transformedEntities     = entities.map(transformEntity).map(mapCentralityFor(transformedInteractions))
 
+    const books   = transformedInteractions.map(i => i.book)
+    const maxBook = Math.max.apply(null, books);
+
     const graphData = {
       nodes: transformedEntities,
       links: transformedInteractions
@@ -87,7 +91,12 @@ class Container extends React.Component {
 
     this.setState({
       graphData,
-      filteredData: graphData
+      filteredData: graphData,
+      sliderMax: maxBook,
+      sliderValue: {
+        min: 1,
+        max: maxBook
+      }
     })
   }
 
@@ -122,7 +131,7 @@ class Container extends React.Component {
 
   render() {
     const { filteredData, sliderValue } = this.state;
-    
+
     return (
       <div className="odyssey-grapher">
         <SocialGraph
@@ -131,7 +140,7 @@ class Container extends React.Component {
         <RangeSlider
             handleChange={this.handleRangeChange}
             min={1}
-            max={24}
+            max={this.state.sliderMax}
             value={sliderValue} />
 
         <SocialStats
