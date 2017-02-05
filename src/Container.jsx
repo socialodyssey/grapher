@@ -38,8 +38,9 @@ function transformEntity(entity) {
   }
 } 
 
-function transformInteraction({ _from, _to, ...rest }) {
+function transformInteraction({ _from, _to, _id, ...rest }) {
   return {
+    id:     _id,
     source: _from,
     target: _to,
     ...rest
