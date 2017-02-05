@@ -32,3 +32,9 @@ html, body {
     border: 2px solid black;
 }
 
+.GraphConfig {
+    width: 50vw;
+    text-align: right;
+    float: right;
+}
+

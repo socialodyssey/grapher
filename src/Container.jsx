@@ -2,10 +2,12 @@ import React from 'react';
 import Graph from './Graph';
 import interactions from './data/interactions';
 import entities from './data/entities';
+import bridges  from './data/bridges';
 
 import SocialGraph from './SocialGraph';
 import SocialStats from './SocialStats';
 import RangeSlider from './RangeSlider';
+import GraphConfig from './GraphConfig';
 
 function filterBy(key, a, b) {
   return o => {
@@ -64,11 +66,15 @@ class Container extends React.Component {
         min: 1,
         max: 2
       },
-      sliderMax: 2
+      sliderMax: 2,
+      graphConfig: {
+        'show-bridges': true
+      }
     }
 
     this.fetchData = this.fetchData.bind(this);
     this.handleRangeChange = this.handleRangeChange.bind(this);
+    this.handleGraphConfigChange = this.handleGraphConfigChange.bind(this);
   }
 
   // MILO: This used to be async, hence the overwrought design
@@ -86,8 +92,9 @@ class Container extends React.Component {
     const maxBook = Math.max.apply(null, books);
 
     const graphData = {
-      nodes: transformedEntities,
-      links: transformedInteractions
+      nodes:   transformedEntities,
+      links:   transformedInteractions,
+      bridges: bridges
     }
 
     this.setState({
@@ -114,6 +121,7 @@ class Container extends React.Component {
 
     const filteredData = Object.assign(
       {},
+      graphData,
       {
         nodes: newNodes,
         links: newLinks
@@ -126,23 +134,52 @@ class Container extends React.Component {
     })
   }
 
+  handleGraphConfigChange(e) {
+    const key = e.target.name;
+
+    const oldConfig = this.state.graphConfig;
+
+    let newConfig = Object.assign({}, oldConfig)
+    
+    switch(e.target.type) {
+      case 'checkbox':
+        newConfig[key] = e.target.checked
+        break;
+      default:
+        newConfig[key] = e.target.value
+        break;
+    }
+
+    console.log(newConfig)
+
+    this.setState({
+      graphConfig: newConfig
+    })
+  }
+
   componentDidMount() {
     this.fetchData();
   }
 
   render() {
-    const { filteredData, sliderValue } = this.state;
+    const { filteredData, sliderValue, graphConfig } = this.state;
 
     return (
       <div className="odyssey-grapher">
         <SocialGraph
-            data={filteredData} />
+            data={filteredData}
+            showBridges={graphConfig['show-bridges']}
+        />
 
         <RangeSlider
             handleChange={this.handleRangeChange}
             min={1}
             max={this.state.sliderMax}
             value={sliderValue} />
+
+        <GraphConfig
+            handleChange={this.handleGraphConfigChange}
+            current={graphConfig} />
 
         <SocialStats
             data={filteredData} />
