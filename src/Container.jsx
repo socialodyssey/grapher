@@ -35,7 +35,13 @@ function mapCentralityFor(interactions) {
       ...entity,
       centrality: {
         out: outCent,
-        in:  inCent
+        in:  inCent,
+        weighted: outCent +
+                  inCent +
+                  interactions
+          .filter(i => i.source === entity.id || i.target === entity.id)
+          .map(i => i.selection.text.length)
+          .reduce((a, b) => a + b, 0)
       }
     }
   }
@@ -124,7 +130,7 @@ class Container extends React.Component {
 
                               // TODO: Figure out why this map is necessary.
                               // How is d3 modifying the links even when I clone the array?
-                              .map((link) => ({ id: link.id, source: link.source.id, target: link.target.id }))
+                              .map((link) => ({ id: link.id, source: link.source.id, target: link.target.id, selection: link.selection }))
     const newNodes = graphData.nodes.map(mapCentralityFor(newLinks))
 
     const filteredData = Object.assign(

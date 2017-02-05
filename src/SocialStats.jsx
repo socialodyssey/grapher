@@ -10,18 +10,16 @@ class SocialStats extends React.Component {
             <th>Out-degree</th>
             <th>In-degree</th>
             <th>Total</th>
+            <th>Weighted total</th>
           </tr>
           {
             this.props.data.nodes
                 .sort((a, b) => {
-                  const ac = a.centrality.in + a.centrality.out;
-                  const bc = b.centrality.in + b.centrality.out;
-
-                  if(ac === bc) {
+                  if(a.centrality.weighted === b.centrality.weighted) {
                     return b.name < a.name ? 1 : -1;
                   }
 
-                  return bc - ac;
+                  return b.centrality.weighted - a.centrality.weighted;
                 })
                 .map((d) => {
                   return (
@@ -30,6 +28,7 @@ class SocialStats extends React.Component {
                       <td>{d.centrality.out}</td>
                       <td>{d.centrality.in}</td>
                       <td>{d.centrality.in + d.centrality.out}</td>
+                      <td>{d.centrality.weighted}</td>
                     </tr>
                   )
                 })
