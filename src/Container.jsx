@@ -21,6 +21,7 @@ function filterBy(key, a, b) {
 function getWeight(arr) {
   return arr
     .filter(i => i.type === 'INR.VERBAL-NEAR')
+    .map(i => i.selection.text.length)
     .reduce((a, b) => a + b, 0);
 }
 
