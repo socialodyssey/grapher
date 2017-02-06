@@ -8,7 +8,9 @@ class SocialStats extends React.Component {
           <tr>
             <th>Character</th>
             <th>Out-degree</th>
+            <th>Out-weight</th>
             <th>In-degree</th>
+            <th>In-weight</th>
             <th>Total</th>
             <th>Weighted total</th>
           </tr>
@@ -26,7 +28,9 @@ class SocialStats extends React.Component {
                     <tr key={d.name}>
                       <td>{d.name}</td>
                       <td>{d.centrality.out}</td>
+                      <td>{d.centrality.outWeighted}</td>
                       <td>{d.centrality.in}</td>
+                      <td>{d.centrality.inWeighted}</td>
                       <td>{d.centrality.in + d.centrality.out}</td>
                       <td>{d.centrality.weighted}</td>
                     </tr>
