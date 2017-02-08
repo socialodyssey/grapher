@@ -1,13 +1,15 @@
-import React from 'react';
-import Graph from './Graph';
+import React        from 'react';
+import Graph        from './Graph';
 import interactions from './data/interactions';
-import entities from './data/entities';
-import bridges  from './data/bridges';
+import entities     from './data/entities';
+import bridges      from './data/bridges';
 
-import SocialGraph from './SocialGraph';
-import SocialStats from './SocialStats';
-import RangeSlider from './RangeSlider';
-import GraphConfig from './GraphConfig';
+import Switcher       from './Switcher';
+import SocialGraph     from './SocialGraph';
+import SocialLineGraph from './SocialLineGraph';
+import SocialStats     from './SocialStats';
+import RangeSlider     from './RangeSlider';
+import GraphConfig     from './GraphConfig';
 
 function filterByRange(key, a, b) {
   return o => {
@@ -237,11 +239,19 @@ class Container extends React.Component {
 
     return (
       <div className="odyssey-grapher">
-        <SocialGraph
-            data={filteredData}
-            showBridges={graphConfig['show-bridges']}
-            showEdgeWeight={graphConfig['show-edge-weight']}
-        />
+        <Switcher show="LineGraph">
+          <SocialGraph
+              data={filteredData}
+              showBridges={graphConfig['show-bridges']}
+              showEdgeWeight={graphConfig['show-edge-weight']}
+              data-tabkey="SocialGraph"
+          />
+          <SocialLineGraph
+              data-tabkey="LineGraph"
+              data={filteredData}
+              nodeID="Entities/104162"
+          />
+        </Switcher>
 
         <div className="control-panel">
           <RangeSlider
