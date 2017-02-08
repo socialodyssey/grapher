@@ -203,6 +203,7 @@ class Container extends React.Component {
       // TODO: Figure out why this map is necessary.
       // How is d3 modifying the links even when I clone the array?
                                 .map(({ source, target, ...rest }) => ({ ...rest, source: source.id, target: target.id }))
+
       const newNodes = graphData.nodes.map(mapCentralityFor(newLinks))
 
       const filteredData = Object.assign(
@@ -231,6 +232,7 @@ class Container extends React.Component {
 
         <div className="control-panel">
           <RangeSlider
+              title="Books"
               handleChange={this.handleRangeChange}
               min={1}
               max={this.state.sliderMax}
