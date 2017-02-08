@@ -2,12 +2,13 @@ import React from 'react'
 import * as d3 from 'd3';
 
 const colors = {
-  circleFill:   '#5BC0EB',
-  circleHlFill: '#91d5f2',
-  circleHlStroke: '#FDE74C',
-  line:   '#bababa',
-  lineHl: '#FDE74C',
-  lineBridge: '#C3423F'
+  circleFill:      '#5BC0EB',
+  circleHlFill:    '#91d5f2',
+  circleHlStroke:  '#FDE74C',
+  line:            '#bababa',
+  lineHl:          '#FDE74C',
+  lineBridge:      '#C3423F',
+  text:            '#000'
 };
 
 function isWeightedEdge(edge) {
@@ -94,6 +95,16 @@ class Graph extends React.Component {
           return 'none';
         })
 
+      node
+        .selectAll('text')
+        .style('font-size', (d2) => {
+          if(d.id === d2.id || this.areConnected(d, d2)) {
+            return '23px';
+          }
+
+          return '16px'
+        })
+
       this.setLinkStyle(link, {
         hlFrom: d
       })
@@ -109,6 +120,11 @@ class Graph extends React.Component {
         .style('fill', colors.circleFill)
         .style('stroke', 'none')
 
+      node
+        .selectAll('text')
+        .style('font-weight', 'bold')
+        .style('font-size', '16px')
+      
       this.setLinkStyle(link)
     }
   }
@@ -211,7 +227,7 @@ class Graph extends React.Component {
       ])
 
     const radiusRange = [1, 70];
-    const strokeRange = [1, 5];
+    const strokeRange = [2, 8];
 
     let node = container
       .select('.nodes')
@@ -240,7 +256,7 @@ class Graph extends React.Component {
     node
       .append('text')
       .attr('class', 'label')
-      .attr('fill', 'black')
+      .attr('fill', colors.text)
       .attr('stroke', 'none')
       .attr('font-weight', 'bold')
       .text((d) => d.name)
