@@ -215,9 +215,10 @@ class Container extends React.Component {
                                   return false
                                 })
 
+
       // TODO: Figure out why this map is necessary.
       // How is d3 modifying the links even when I clone the array?
-                                .map(({ source, target, ...rest }) => ({ ...rest, source: source.id, target: target.id }))
+                                .map(({ source, target, ...rest }) => ({ ...rest, source: source.id || source, target: target.id || target }))
 
       const newNodes = graphData.nodes.map(mapCentralityFor(newLinks))
 

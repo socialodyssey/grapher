@@ -27,35 +27,13 @@ class SocialLineGraph extends React.Component {
     const { data, nodeID } = this.props;
     const { links } = data;
     
-    const relevantLinks = links
+    let count = 0;
+    const newData = links
       .filter((link) => link.book === 4)
       .filter((link) => link.source === nodeID || link.target === nodeID)
-
-    const fromLines = relevantLinks
-      .map((link) => link.selection.from_line);
-
-    let lineHash = {}
-    relevantLinks
-      .forEach((link) => lineHash[link.selection.from_line] = true)
-
-    const maxLine = Math.max.apply(null, fromLines)
-
-    const newData = []
-
-    for(let i = 0, count = 0; i < maxLine; i++) {
-      if(lineHash[i]) {
-        newData[i] = {
-          line:  i,
-          count: count++
-        };
-      }
-      else {
-        newData[i] = {
-          line:  i,
-          count: count
-        };
-      }
-    }
+      .map((link) => link.selection.from_line)
+      .sort((a, b) => a - b)
+      .map((line) => ({ line, count: count++ }))
 
     this.setState({
       data: newData

@@ -40,6 +40,7 @@ class LineGraph extends React.Component {
       .line()
       .x((d) => x(d.line))
       .y((d) => y(d.count))
+      .curve(d3.curveBasis)
 
     x.domain(d3.extent(data, (d) => d.line));
     y.domain(d3.extent(data, (d) => d.count));
@@ -53,6 +54,7 @@ class LineGraph extends React.Component {
         .attr('dx', width )
         .attr('dy', '-1em')
         .attr('text-anchor', 'end')
+        .attr('stroke', 'none')
         .text('Line');
 
     this.d3Container
@@ -64,17 +66,19 @@ class LineGraph extends React.Component {
         .attr('y', 6)
         .attr('dy', '0.71em')
         .attr('text-anchor', 'end')
+        .attr('stroke', 'none')
         .text('Interactions');
+
+    this.d3Container.select('.line').remove()
 
     this.d3Container
         .append('path')
         .datum(data)
-        .attr('fill', 'none')
+        .attr('class', 'line')
         .attr('stroke', 'steelblue')
-        .attr('stroke-linejoin', 'round')
-        .attr('stroke-linecap', 'round')
-        .attr('stroke-width', 1.5)
-        .attr('d', line);
+        .attr('stroke-width', 2)
+        .attr('fill', 'none')
+        .attr('d', line(data))
   }
 
   render() {
