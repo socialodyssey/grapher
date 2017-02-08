@@ -25,6 +25,10 @@ function getWeight(arr) {
     .reduce((a, b) => a + b, 0);
 }
 
+function keyChanged(key, o1, o2) {
+  return o1[key] !== o2[key];
+}
+
 function mapCentralityFor(interactions) {
   return entity => {
     const outs = interactions
@@ -167,9 +171,18 @@ class Container extends React.Component {
         break;
     }
 
+    // Basically some config params require us to filter the data up here
+    // some get passed on and dealt with in the Graph.jsx componentDidUpdate
+    //
+    // I recognise this is unideal, but d3.filter seems to break things for me
+    // so I'm filtering the data up here.
+    //
+    const needsFiltering = (keyChanged('show-cog', oldConfig, newConfig) ||
+                            keyChanged('show-inr', oldConfig, newConfig));
+    
     this.setState({
       graphConfig: newConfig,
-      needsFiltering: true
+      needsFiltering
     })
   }
 
