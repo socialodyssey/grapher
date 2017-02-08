@@ -16,6 +16,16 @@ function GraphConfig({ handleChange, current }) {
             displayName="Show edge weight"
             currentVal={current['show-edge-weight']}
             handleChange={handleChange} />
+        <Checkbox
+            name="show-cog"
+            displayName="Show COG events"
+            currentVal={current['show-cog']}
+            handleChange={handleChange} />
+        <Checkbox
+            name="show-inr"
+            displayName="Show INR events"
+            currentVal={current['show-inr']}
+            handleChange={handleChange} />
       </form>
     </div>
   )

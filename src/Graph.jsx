@@ -266,7 +266,7 @@ class Graph extends React.Component {
       .selectAll('line')
 
     link = link
-      .data(links, l => l.id);
+      .data(links, l => l.id)
 
     link
       .exit()

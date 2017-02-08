@@ -9,7 +9,7 @@ import SocialStats from './SocialStats';
 import RangeSlider from './RangeSlider';
 import GraphConfig from './GraphConfig';
 
-function filterBy(key, a, b) {
+function filterByRange(key, a, b) {
   return o => {
     const val = o[key];
 
@@ -102,7 +102,9 @@ class Container extends React.Component {
       sliderMax: 2,
       graphConfig: {
         'show-bridges':     true,
-        'show-edge-weight': true
+        'show-edge-weight': true,
+        'show-cog':         true,
+        'show-inr':         true
       }
     }
 
@@ -143,28 +145,9 @@ class Container extends React.Component {
   }
 
   handleRangeChange(newValue) {
-    const { graphData } = this.state;
-
-    const newLinks = graphData.links
-                              .filter(filterBy('book', newValue.min, newValue.max))
-
-                              // TODO: Figure out why this map is necessary.
-                              // How is d3 modifying the links even when I clone the array?
-                              .map(({ source, target, ...rest }) => ({ ...rest, source: source.id, target: target.id }))
-    const newNodes = graphData.nodes.map(mapCentralityFor(newLinks))
-
-    const filteredData = Object.assign(
-      {},
-      graphData,
-      {
-        nodes: newNodes,
-        links: newLinks
-      }
-    )
-
     this.setState({
       sliderValue: newValue,
-      filteredData
+      needsFiltering: true
     })
   }
 
@@ -184,15 +167,55 @@ class Container extends React.Component {
         break;
     }
 
-    console.log(newConfig)
-
     this.setState({
-      graphConfig: newConfig
+      graphConfig: newConfig,
+      needsFiltering: true
     })
   }
 
   componentDidMount() {
     this.fetchData();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if(this.state.needsFiltering) {
+
+      const { graphData, sliderValue, graphConfig } = this.state;
+
+      const newLinks = graphData.links
+                                .filter(filterByRange('book', sliderValue.min, sliderValue.max))
+                                .filter(({ type }) => {
+                                  if(graphConfig['show-cog'] &&
+                                     (type.lastIndexOf('COG') !== -1 || type === 'PCR')) {
+                                    
+                                    return true;
+                                  }
+
+                                  if(graphConfig['show-inr'] &&
+                                     (type.lastIndexOf('INR') !== -1)) {
+
+                                    return true
+                                  }
+
+                                  return false
+                                })
+
+      // TODO: Figure out why this map is necessary.
+      // How is d3 modifying the links even when I clone the array?
+                                .map(({ source, target, ...rest }) => ({ ...rest, source: source.id, target: target.id }))
+      const newNodes = graphData.nodes.map(mapCentralityFor(newLinks))
+
+      const filteredData = Object.assign(
+        {},
+        graphData,
+        {
+          nodes: newNodes,
+          links: newLinks
+        }
+      )
+
+      this.setState({ filteredData, needsFiltering: false });
+    }
   }
 
   render() {
@@ -212,6 +235,7 @@ class Container extends React.Component {
               min={1}
               max={this.state.sliderMax}
               value={sliderValue} />
+
           <GraphConfig
               handleChange={this.handleGraphConfigChange}
               current={graphConfig} />
