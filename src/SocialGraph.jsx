@@ -23,7 +23,6 @@ class SocialGraph extends React.Component {
   }
   render() {
     const { width, height } = this.state;
-    const { showBridges } = this.props;
     
     return (
       <div className="SocialGraph" style={{
@@ -32,10 +31,10 @@ class SocialGraph extends React.Component {
         height: height + 'px'
       }}>
         <Graph
+            {...this.props}
             data={this.props.data}
             width={width}
             height={height}
-            showBridges={showBridges}
         />
       </div>
     )

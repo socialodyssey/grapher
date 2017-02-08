@@ -41,7 +41,7 @@ function mapCentralityFor(interactions) {
     
     const outWeight = getWeight(outs);
     const inWeight = getWeight(ins);
-    
+
     const outCent = outs.length;
     const inCent  = ins.length;
 
@@ -101,7 +101,8 @@ class Container extends React.Component {
       },
       sliderMax: 2,
       graphConfig: {
-        'show-bridges': true
+        'show-bridges':     true,
+        'show-edge-weight': true
       }
     }
 
@@ -149,7 +150,7 @@ class Container extends React.Component {
 
                               // TODO: Figure out why this map is necessary.
                               // How is d3 modifying the links even when I clone the array?
-                              .map((link) => ({ id: link.id, source: link.source.id, target: link.target.id, selection: link.selection }))
+                              .map(({ source, target, ...rest }) => ({ ...rest, source: source.id, target: target.id }))
     const newNodes = graphData.nodes.map(mapCentralityFor(newLinks))
 
     const filteredData = Object.assign(
@@ -202,6 +203,7 @@ class Container extends React.Component {
         <SocialGraph
             data={filteredData}
             showBridges={graphConfig['show-bridges']}
+            showEdgeWeight={graphConfig['show-edge-weight']}
         />
 
         <div className="control-panel">

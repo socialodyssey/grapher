@@ -63,7 +63,7 @@ h1,h2,h3,h4,h5 {
 }
 
 .RangeSlider {
-    flex-grow: 2;
+    flex-grow: 1;
     height: 6em;
     margin: 1em;
     padding: 2em;
@@ -73,9 +73,26 @@ h1,h2,h3,h4,h5 {
 
 .GraphConfig {
     max-height: 6em;
-    flex-grow: 1;
+    flex-grow: 0;
     margin: 1em;
     padding: 2em;
     padding-top: 0;
     border: 2px solid black;
+}
+
+.Form {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.checkbox {
+    padding-right: 0.5em;
+}
+
+.checkbox label {
+    font-weight: bold;
+}
+
+.checkbox input {
+    vertical-align: middle;
 }

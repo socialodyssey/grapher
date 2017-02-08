@@ -10,6 +10,9 @@ const colors = {
   lineBridge: '#C3423F'
 };
 
+function isWeightedEdge(edge) {
+  return edge.type === 'INR.VERBAL-NEAR';
+}
 
 class Graph extends React.Component {
   constructor(props) {
@@ -34,9 +37,18 @@ class Graph extends React.Component {
   }
     
   setLinkStyle(link, opts={}) {
+    const { links } = this.props.data;
     const { hlFrom } = opts;
-    const { showBridges } = this.props;
-
+    const { showBridges, showEdgeWeight } = this.props;
+    
+    const weightScale = d3
+      .scaleLinear()
+      .domain([
+        0,
+        d3.max(links, (d) => isWeightedEdge(d) ? d.selection.text.length : 1)
+      ])
+      .range([1, 40])
+    
     link
       .style('stroke', (d) => {
         if(hlFrom &&
@@ -56,10 +68,10 @@ class Graph extends React.Component {
         }
 
         if(showBridges && this.isBridge(d)) {
-          return 4;
+          return showEdgeWeight && isWeightedEdge(d) ? weightScale(d.selection.text.length) : 4
         }
 
-        return 1;
+        return showEdgeWeight && isWeightedEdge(d) ? weightScale(d.selection.text.length) : 1
       })
   }
   

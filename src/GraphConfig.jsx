@@ -1,12 +1,21 @@
 import React from 'react';
+import Checkbox from './Checkbox';
 
 function GraphConfig({ handleChange, current }) {
   return (
     <div className="GraphConfig">
       <h2>Display</h2>
-      <form>
-        <label htmlFor="show-bridges">Show bridges</label>
-        <input type="checkbox" name="show-bridges" onChange={handleChange} checked={current['show-bridges']} />
+      <form className="Form">
+        <Checkbox
+            name="show-bridges"
+            displayName="Show bridges"
+            currentVal={current['show-bridges']}
+            handleChange={handleChange} />
+        <Checkbox
+            name="show-edge-weight"
+            displayName="Show edge weight"
+            currentVal={current['show-edge-weight']}
+            handleChange={handleChange} />
       </form>
     </div>
   )
