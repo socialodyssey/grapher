@@ -37,24 +37,9 @@ class LineGraph extends React.Component {
 
     this.d3BottomAxis
         .call(d3.axisBottom(x))
-        .append('text')
-        .attr('fill', '#000')
-        .attr('dx', width )
-        .attr('dy', '-1em')
-        .attr('text-anchor', 'end')
-        .attr('stroke', 'none')
-        .text('Line');
 
     this.d3LeftAxis
-        .call(d3.axisLeft(y))
-        .append('text')
-        .attr('fill', '#000')
-        .attr('transform', 'rotate(-90)')
-        .attr('y', 6)
-        .attr('dy', '0.71em')
-        .attr('text-anchor', 'end')
-        .attr('stroke', 'none')
-        .text('Interactions');
+        .call(d3.axisLeft(y));
 
     this.d3Container
         .select('.line')
@@ -91,10 +76,29 @@ class LineGraph extends React.Component {
     
     this.d3BottomAxis = this.d3Container
         .append('g')
-        .attr('transform', 'translate(0,' + height + ')')
+        .attr('transform', 'translate(0,' + height + ')');
+
+    this.d3BottomAxis
+        .append('text')
+        .attr('fill', '#000')
+        .attr('dx', width )
+        .attr('dy', '-1em')
+        .attr('text-anchor', 'end')
+        .attr('stroke', 'none')
+        .text('Line');
     
     this.d3LeftAxis = this.d3Container
-        .append('g')
+        .append('g');
+
+    this.d3LeftAxis
+        .append('text')
+        .attr('fill', '#000')
+        .attr('transform', 'rotate(-90)')
+        .attr('y', 6)
+        .attr('dy', '0.71em')
+        .attr('text-anchor', 'end')
+        .attr('stroke', 'none')
+        .text('Interactions');
 
     this.updateDisplay()
   }
