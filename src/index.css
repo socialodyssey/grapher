@@ -85,6 +85,11 @@ h1,h2,h3,h4,h5 {
     flex-wrap: wrap;
 }
 
+.Tabs {
+    position: absolute;
+    right: 1em;
+}
+
 .checkbox {
     padding-right: 0.5em;
 }
@@ -95,4 +100,41 @@ h1,h2,h3,h4,h5 {
 
 .checkbox input {
     vertical-align: middle;
+}
+
+.btn {
+    user-select: none;
+    outline: none;
+    background: #fff;
+    border: 1px solid black;
+    cursor: pointer;
+    padding: 0.5em;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.btn:focus {
+    background-color: #f2f2f2;
+}
+
+.btn:hover {
+    background-color: #f2f2f2;
+}
+
+.btn-active:hover {
+    background-color: #515151;
+}
+
+
+.btn:active, .btn-active {
+    background-color: #515151 !important;
+    color: #f2f2f2 !important;
+}
+
+.btn-group {
+    margin: 1em;
+}
+
+.btn-group .btn+.btn {
+    border-left: none;
 }

@@ -6,21 +6,11 @@ class LineGraph extends React.Component {
     super(props);
 
     this.state = {};
+
+    this.updateDisplay = this.updateDisplay.bind(this);
   }
 
-  componentDidMount() {
-    const margin = {top: 20, right: 20, bottom: 30, left: 50};
-          
-    const svg    = d3.select(this.refs['svg'])
-    const width  = parseInt(svg.attr('width')) - margin.left - margin.right;
-    const height = parseInt(svg.attr('height')) - margin.top - margin.bottom;
-
-    this.d3Container = svg
-      .append('g')
-      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-  }
-
-  componentDidUpdate() {
+  updateDisplay() {
     const { data } = this.props;
 
     const margin = {top: 20, right: 20, bottom: 30, left: 50};
@@ -79,6 +69,24 @@ class LineGraph extends React.Component {
         .attr('stroke-width', 2)
         .attr('fill', 'none')
         .attr('d', line(data))
+  }
+
+  componentDidMount() {
+    const margin = {top: 20, right: 20, bottom: 30, left: 50};
+          
+    const svg    = d3.select(this.refs['svg'])
+    const width  = parseInt(svg.attr('width')) - margin.left - margin.right;
+    const height = parseInt(svg.attr('height')) - margin.top - margin.bottom;
+
+    this.d3Container = svg
+      .append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    this.updateDisplay()
+  }
+
+  componentDidUpdate() {
+    this.updateDisplay()
   }
 
   render() {

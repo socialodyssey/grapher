@@ -4,7 +4,8 @@ import interactions from './data/interactions';
 import entities     from './data/entities';
 import bridges      from './data/bridges';
 
-import Switcher       from './Switcher';
+import Switcher        from './Switcher';
+import Tabs            from './Tabs';
 import SocialGraph     from './SocialGraph';
 import SocialLineGraph from './SocialLineGraph';
 import SocialStats     from './SocialStats';
@@ -111,12 +112,15 @@ class Container extends React.Component {
         'show-edge-weight': true,
         'show-cog':         true,
         'show-inr':         true
-      }
+      },
+      activeTab: 'SocialGraph'
     }
 
     this.fetchData = this.fetchData.bind(this);
     this.handleRangeChange = this.handleRangeChange.bind(this);
     this.handleGraphConfigChange = this.handleGraphConfigChange.bind(this);
+    this.handleChangeTab = this.handleChangeTab.bind(this);
+    this.randomEntity = this.randomEntity.bind(this);
   }
 
   // MILO: This used to be async, hence the overwrought design
@@ -188,6 +192,12 @@ class Container extends React.Component {
     })
   }
 
+  handleChangeTab(tabKey) {
+    this.setState({
+      activeTab: tabKey
+    })
+  }
+
   componentDidMount() {
     this.fetchData();
   }
@@ -235,12 +245,45 @@ class Container extends React.Component {
     }
   }
 
+  randomEntity() {
+    const { filteredData } = this.state
+    
+    if(!filteredData) {
+      return ''
+    }
+    
+    const len = filteredData.nodes.length;
+
+    if(!len) {
+      return ''
+    }
+
+    return filteredData.nodes[Math.floor(Math.random()*len)]
+  }
+
   render() {
-    const { filteredData, sliderValue, graphConfig } = this.state;
+    const { filteredData, sliderValue, graphConfig, activeTab } = this.state;
+
+    const randomEntity = this.randomEntity()
 
     return (
       <div className="odyssey-grapher">
-        <Switcher show="LineGraph">
+        <Tabs
+            tabs={[
+              {
+                key:     'SocialGraph',
+                text:    'force'
+              },
+              {
+                key:     'LineGraph',
+                text:    'line'
+              }
+            ]}
+            activeTab={activeTab}
+            changeHandler={this.handleChangeTab}
+        />
+
+        <Switcher show={this.state.activeTab}>
           <SocialGraph
               data={filteredData}
               showBridges={graphConfig['show-bridges']}
@@ -250,7 +293,9 @@ class Container extends React.Component {
           <SocialLineGraph
               data-tabkey="LineGraph"
               data={filteredData}
-              nodeID="Entities/104162"
+              nodeID={randomEntity.id}
+              name={randomEntity.name}
+              book={Math.ceil(Math.random()*4)}
           />
         </Switcher>
 

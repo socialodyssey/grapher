@@ -19,11 +19,16 @@ class Graph extends React.Component {
   constructor(props) {
     super(props);
     
+
+    this.bridgeHash = {};
+    this.linksHash = {};
+
     this.isBridge = this.isBridge.bind(this);
     this.areConnected = this.areConnected.bind(this);
     this.setLinkStyle = this.setLinkStyle.bind(this);
     this.getNodeHighlighter = this.getNodeHighlighter.bind(this);
     this.getNodeUnhighlighter = this.getNodeUnhighlighter.bind(this);
+    this.updateDisplay = this.updateDisplay.bind(this);
   }
 
   isBridge(link) {
@@ -128,90 +133,11 @@ class Graph extends React.Component {
       this.setLinkStyle(link)
     }
   }
-  
-  componentDidMount() {
-    const svg    = d3.select(this.refs['svg']);
-    const width  = parseInt(svg.attr('width'));
-    const height = parseInt(svg.attr('height'));
 
-    // Add container group tag
-    this.d3Container = svg
-      .append('g')
-      .attr('class', 'container')
-
-    const container = this.d3Container;
-
-    // Add link and node groups
-    container
-      .append('g')
-      .attr('class', 'links')
-
-    container
-      .append('g')
-      .attr('class', 'nodes')
-
-    // Set up zooming/panning
-    const zoom = d3
-      .zoom()
-      .scaleExtent([0, 8])
-      .on('zoom', () => {
-        container.attr("transform", d3.event.transform)
-      })
-    svg.call(zoom)
-
-    this.d3Simulation = d3.forceSimulation()
-                          .force('link', d3.forceLink().id((d) => d.id))
-                          .force('charge', d3.forceManyBody().strength(-3000))
-                          .force('center', d3.forceCenter(width / 2, height / 2))
-                          .velocityDecay(0.8)
-      
-    this.d3Drag = d3.drag()
-                    .on('start', (d) => {
-                      if (!d3.event.active) this.d3Simulation.alphaTarget(0.3).restart();
-                      d.fx = d.x;
-                      d.fy = d.y;
-                      this.dragging = true;
-                    })
-                    .on('drag', (d) => {
-                      d.fx = d3.event.x;
-                      d.fy = d3.event.y;
-                    })
-                    .on('end', (d) => {
-                      if (!d3.event.active) this.d3Simulation.alphaTarget(0);
-                      d.fx = null;
-                      d.fy = null;
-                      this.dragging = false;
-                    })
-  }
-
-  componentDidUpdate(prevProps) {
+  updateDisplay() {
     const { nodes, links, bridges } = this.props.data;
 
-    if(bridges !== prevProps.data.bridges) {
-      this.bridgeHash = {};
-      bridges.forEach((bridge) => {
-        this.bridgeHash[bridge.from + '-' + bridge.to] = true;
-      })
-    }
-
-    if(links !== prevProps.data.links) {
-      this.linksHash = {};
-      links.forEach((link) => {
-        this.linksHash[link.source + '-' + link.target] = true;
-      })
-    }
-
     const container = this.d3Container;
-
-    this.setLinkStyle(
-      container
-        .select('.links')
-        .selectAll('line')
-    )
-
-    if(prevProps.data === this.props.data) {
-      return;
-    }
 
     //
     // Not sure why this is stll necessary?
@@ -315,6 +241,93 @@ class Graph extends React.Component {
         .links(links);
     
     this.d3Simulation.alpha(1).restart();
+  }
+  
+  componentDidMount() {
+    const svg    = d3.select(this.refs['svg']);
+    const width  = parseInt(svg.attr('width'));
+    const height = parseInt(svg.attr('height'));
+
+    // Add container group tag
+    this.d3Container = svg
+      .append('g')
+      .attr('class', 'container')
+
+    const container = this.d3Container;
+
+    // Add link and node groups
+    container
+      .append('g')
+      .attr('class', 'links')
+
+    container
+      .append('g')
+      .attr('class', 'nodes')
+
+    // Set up zooming/panning
+    const zoom = d3
+      .zoom()
+      .scaleExtent([0, 8])
+      .on('zoom', () => {
+        container.attr("transform", d3.event.transform)
+      })
+    svg.call(zoom)
+
+    this.d3Simulation = d3.forceSimulation()
+                          .force('link', d3.forceLink().id((d) => d.id))
+                          .force('charge', d3.forceManyBody().strength(-3000))
+                          .force('center', d3.forceCenter(width / 2, height / 2))
+                          .velocityDecay(0.8)
+      
+    this.d3Drag = d3.drag()
+                    .on('start', (d) => {
+                      if (!d3.event.active) this.d3Simulation.alphaTarget(0.3).restart();
+                      d.fx = d.x;
+                      d.fy = d.y;
+                      this.dragging = true;
+                    })
+                    .on('drag', (d) => {
+                      d.fx = d3.event.x;
+                      d.fy = d3.event.y;
+                    })
+                    .on('end', (d) => {
+                      if (!d3.event.active) this.d3Simulation.alphaTarget(0);
+                      d.fx = null;
+                      d.fy = null;
+                      this.dragging = false;
+                    })
+
+    this.updateDisplay();
+  }
+
+  componentDidUpdate(prevProps) {
+    const { nodes, links, bridges } = this.props.data;
+
+    if(bridges !== prevProps.data.bridges) {
+      this.bridgeHash = {};
+      bridges.forEach((bridge) => {
+        this.bridgeHash[bridge.from + '-' + bridge.to] = true;
+      })
+    }
+
+    if(links !== prevProps.data.links) {
+      this.linksHash = {};
+      links.forEach((link) => {
+        this.linksHash[link.source + '-' + link.target] = true;
+      })
+    }
+
+    this.setLinkStyle(
+      this.d3Container
+        .select('.links')
+        .selectAll('line')
+    )
+
+    if(prevProps.data === this.props.data) {
+      return;
+    }
+
+    this.updateDisplay();
   }
 
   render() {

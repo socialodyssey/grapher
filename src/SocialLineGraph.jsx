@@ -7,7 +7,8 @@ class SocialLineGraph extends React.Component {
     super(props);
 
     this.state = {
-      data: []
+      data: [],
+      name: ''
     }
 
     this.updateData = this.updateData.bind(this);
@@ -24,16 +25,18 @@ class SocialLineGraph extends React.Component {
   }
 
   updateData() {
-    const { data, nodeID } = this.props;
+    const { data, nodeID, book } = this.props;
     const { links } = data;
-    
+
     let count = 0;
     const newData = links
-      .filter((link) => link.book === 4)
-      .filter((link) => link.source === nodeID || link.target === nodeID)
+      .filter((link) => link.book === book)
+      .filter((link) => (link.source.id || link.source) === nodeID || (link.target.id || link.target) === nodeID)
       .map((link) => link.selection.from_line)
       .sort((a, b) => a - b)
       .map((line) => ({ line, count: count++ }))
+
+    console.log(newData)
 
     this.setState({
       data: newData
@@ -43,6 +46,9 @@ class SocialLineGraph extends React.Component {
   render() {
     return (
       <div className="SocialLineGraph">
+        <div className="graph-info">
+          <h2>{this.props.name}, Book: {this.props.book}</h2>
+        </div>
         <LineGraph
             width={750}
             height={500}
