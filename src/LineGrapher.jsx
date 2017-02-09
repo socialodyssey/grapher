@@ -1,4 +1,5 @@
 import React from 'react';
+import range from 'lodash.range';
 
 import DropdownInput from './DropdownInput';
 import SocialLineGraph from './SocialLineGraph';
@@ -17,7 +18,6 @@ class LineGrapher extends React.Component {
   }
 
   handleFormChange(name, val) {
-    console.log(name, val)
     this.setState({
       [name]: val
     })
@@ -34,13 +34,18 @@ class LineGrapher extends React.Component {
   
   render() {
     const { data } = this.props;
-    const { character, showForm } = this.state;
+    const { character, book, showForm } = this.state;
     
     const { nodes } = data;
 
     const characterChoices = nodes.map((node) => ({
       id:   node.id,
       name: node.name
+    }))
+
+    const bookChoices = range(24).map((i) => ({
+      id:   i + 1,
+      name: i + 1
     }))
 
     if (showForm) {
@@ -53,6 +58,13 @@ class LineGrapher extends React.Component {
               choices={characterChoices}
               currentVal={this.state.character}
           />
+          <DropdownInput
+              name="book"
+              displayName="Book"
+              handleChange={this.handleFormChange}
+              choices={bookChoices}
+              currentVal={this.state.book}
+          />
           <input className="btn" type="submit" value="OK!" onClick={this.handleFormSubmit} />
         </form>
       )
@@ -64,7 +76,7 @@ class LineGrapher extends React.Component {
           height={400}
           data={data}
           nodeID={character}
-          book={4}
+          book={parseInt(book)}
       />
     )
   }

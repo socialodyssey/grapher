@@ -12,7 +12,6 @@ export default function DropdownInput({ name, displayName, choices, currentVal, 
             )
           })
         }
-        <option name="one">One</option>
       </select>
     </div>
   )
