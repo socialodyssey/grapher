@@ -56,15 +56,26 @@ class LineGraph extends React.Component {
         .attr('stroke', 'none')
         .text('Interactions');
 
-    this.d3Container.select('.line').remove()
     this.d3Container
+        .select('.line')
+        .remove()
+    
+    const path = this.d3Container
         .append('path')
-        .datum(data)
         .attr('class', 'line')
         .attr('stroke', 'steelblue')
         .attr('stroke-width', 2)
         .attr('fill', 'none')
-        .attr('d', line(data))
+        .attr('d', line(data));
+
+    const pathLength = path.node().getTotalLength();
+
+    path
+      .attr('stroke-dasharray', pathLength + ' ' + pathLength)
+      .attr('stroke-dashoffset', pathLength)
+      .transition()
+      .duration(1000)
+      .attr('stroke-dashoffset', 0)
   }
 
   componentDidMount() {
