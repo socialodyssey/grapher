@@ -19,7 +19,7 @@ class SocialLineGraph extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if(prevProps.data !== this.props.data) {
+    if (prevProps !== this.props) {
       this.updateData();
     }
   }
@@ -35,8 +35,6 @@ class SocialLineGraph extends React.Component {
       .map((link) => link.selection.from_line)
       .sort((a, b) => a - b)
       .map((line) => ({ line, count: count++ }))
-
-    console.log(newData)
 
     this.setState({
       data: newData

@@ -35,9 +35,7 @@ class LineGraph extends React.Component {
     x.domain(d3.extent(data, (d) => d.line));
     y.domain(d3.extent(data, (d) => d.count));
 
-    this.d3Container
-        .append('g')
-        .attr('transform', 'translate(0,' + height + ')')
+    this.d3BottomAxis
         .call(d3.axisBottom(x))
         .append('text')
         .attr('fill', '#000')
@@ -47,8 +45,7 @@ class LineGraph extends React.Component {
         .attr('stroke', 'none')
         .text('Line');
 
-    this.d3Container
-        .append('g')
+    this.d3LeftAxis
         .call(d3.axisLeft(y))
         .append('text')
         .attr('fill', '#000')
@@ -60,7 +57,6 @@ class LineGraph extends React.Component {
         .text('Interactions');
 
     this.d3Container.select('.line').remove()
-
     this.d3Container
         .append('path')
         .datum(data)
@@ -81,6 +77,13 @@ class LineGraph extends React.Component {
     this.d3Container = svg
       .append('g')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+    
+    this.d3BottomAxis = this.d3Container
+        .append('g')
+        .attr('transform', 'translate(0,' + height + ')')
+    
+    this.d3LeftAxis = this.d3Container
+        .append('g')
 
     this.updateDisplay()
   }
