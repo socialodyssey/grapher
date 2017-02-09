@@ -72,7 +72,7 @@ h1,h2,h3,h4,h5 {
 }
 
 .GraphConfig {
-    max-height: 6em;
+    max-height: 10em;
     flex-grow: 0;
     margin: 1em;
     padding: 2em;
@@ -83,6 +83,12 @@ h1,h2,h3,h4,h5 {
 .Form {
     display: flex;
     flex-wrap: wrap;
+    flex-direction: column;
+    margin: 1em;
+}
+
+.Form .btn {
+    margin: 0;
 }
 
 .Tabs {
@@ -90,16 +96,48 @@ h1,h2,h3,h4,h5 {
     right: 1em;
 }
 
-.checkbox {
-    padding-right: 0.5em;
+.LineGrapherContainer {
+    display: flex;
+    flex-wrap: wrap;
 }
 
-.checkbox label {
+.LineGrapherContainer .add-graph {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.DropdownInput .label {
+    display: inline-block;
+    min-width: 20%;
+}
+
+.DropdownInput .select {
+}
+
+.select {
+    background: none;
+    border: 1px solid black;
+    margin: 1em;
+    min-width: 4em;
+    height: 2.5em;
+}
+
+.Checkbox {
+    margin-bottom: 0.5em;
+    text-align: right;
+}
+
+.Checkbox label {
     font-weight: bold;
+    margin-right: 1em;
+    float: left;
 }
 
-.checkbox input {
+.Checkbox input {
     vertical-align: middle;
+    width: 1em;
+    height: 1em;
 }
 
 .btn {
@@ -111,6 +149,9 @@ h1,h2,h3,h4,h5 {
     padding: 0.5em;
     text-transform: uppercase;
     font-weight: bold;
+    height: 2.5em;
+    min-width: 4em;
+    margin: 1em;
 }
 
 .btn:focus {
@@ -133,6 +174,10 @@ h1,h2,h3,h4,h5 {
 
 .btn-group {
     margin: 1em;
+}
+
+.btn-group .btn {
+    margin: 0;
 }
 
 .btn-group .btn+.btn {

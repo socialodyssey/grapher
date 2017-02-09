@@ -306,6 +306,8 @@ class Graph extends React.Component {
   updateHashes(prevProps) {
     const { links, bridges } = this.props.data;
 
+    if(!bridges) return;
+
     prevProps = prevProps || {
       data: this.props.data
     }

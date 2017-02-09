@@ -19,7 +19,7 @@ class SocialLineGraph extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps !== this.props) {
+    if (prevProps.data !== this.props.data) {
       this.updateData();
     }
   }
@@ -46,7 +46,7 @@ class SocialLineGraph extends React.Component {
 
   render() {
     const { width, height } = this.props;
-    const { name } = this.state;
+    const { name, data } = this.state;
     
     return (
       <div className="SocialLineGraph">
@@ -56,7 +56,7 @@ class SocialLineGraph extends React.Component {
         <LineGraph
             width={width}
             height={height}
-            data={this.state.data}
+            data={data}
         />
       </div>
     )

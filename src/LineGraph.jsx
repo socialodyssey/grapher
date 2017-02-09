@@ -103,8 +103,10 @@ class LineGraph extends React.Component {
     this.updateDisplay()
   }
 
-  componentDidUpdate() {
-    this.updateDisplay()
+  componentDidUpdate(prevProps) {
+    if(prevProps.data !== this.props.data) {
+      this.updateDisplay()
+    }
   }
 
   render() {

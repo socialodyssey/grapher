@@ -4,14 +4,14 @@ import interactions from './data/interactions';
 import entities     from './data/entities';
 import bridges      from './data/bridges';
 
-import Switcher        from './Switcher';
-import Tabs            from './Tabs';
-import SocialGraph     from './SocialGraph';
-import SocialLineGraph from './SocialLineGraph';
-import LineGrapher     from './LineGrapher';
-import SocialStats     from './SocialStats';
-import RangeSlider     from './RangeSlider';
-import GraphConfig     from './GraphConfig';
+import Switcher             from './Switcher';
+import Tabs                 from './Tabs';
+import SocialGraph          from './SocialGraph';
+import SocialLineGraph      from './SocialLineGraph';
+import LineGrapherContainer from './LineGrapherContainer';
+import SocialStats          from './SocialStats';
+import RangeSlider          from './RangeSlider';
+import GraphConfig          from './GraphConfig';
 
 function filterByRange(key, a, b) {
   return o => {
@@ -114,7 +114,7 @@ class Container extends React.Component {
         'show-cog':         true,
         'show-inr':         true
       },
-      activeTab: 'LineGraph'
+      activeTab: 'SocialGraph'
     }
 
     this.fetchData = this.fetchData.bind(this);
@@ -291,7 +291,7 @@ class Container extends React.Component {
               showEdgeWeight={graphConfig['show-edge-weight']}
               data-tabkey="SocialGraph"
           />
-          <LineGrapher
+          <LineGrapherContainer
               data-tabkey="LineGraph"
               data={filteredData}
           />
