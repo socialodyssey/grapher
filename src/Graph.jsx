@@ -29,6 +29,7 @@ class Graph extends React.Component {
     this.getNodeHighlighter = this.getNodeHighlighter.bind(this);
     this.getNodeUnhighlighter = this.getNodeUnhighlighter.bind(this);
     this.updateDisplay = this.updateDisplay.bind(this);
+    this.updateHashes = this.updateHashes.bind(this);
   }
 
   isBridge(link) {
@@ -248,6 +249,8 @@ class Graph extends React.Component {
     const width  = parseInt(svg.attr('width'));
     const height = parseInt(svg.attr('height'));
 
+    this.updateHashes();
+
     // Add container group tag
     this.d3Container = svg
       .append('g')
@@ -300,8 +303,12 @@ class Graph extends React.Component {
     this.updateDisplay();
   }
 
-  componentDidUpdate(prevProps) {
-    const { nodes, links, bridges } = this.props.data;
+  updateHashes(prevProps) {
+    const { links, bridges } = this.props.data;
+
+    prevProps = prevProps || {
+      data: this.props.data
+    }
 
     if(bridges !== prevProps.data.bridges || Object.keys(this.bridgeHash).length === 0) {
       this.bridgeHash = {};
@@ -316,6 +323,10 @@ class Graph extends React.Component {
         this.linksHash[link.source + '-' + link.target] = true;
       })
     }
+  }
+
+  componentDidUpdate(prevProps) {
+    this.updateHashes(prevProps);
 
     this.setLinkStyle(
       this.d3Container
