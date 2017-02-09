@@ -26,7 +26,7 @@ class SocialLineGraph extends React.Component {
 
   updateData() {
     const { data, nodeID, book } = this.props;
-    const { links } = data;
+    const { links, nodes } = data;
 
     let count = 0;
     const newData = links
@@ -36,20 +36,26 @@ class SocialLineGraph extends React.Component {
       .sort((a, b) => a - b)
       .map((line) => ({ line, count: count++ }))
 
+    const name = nodes.filter((node) => node.id === nodeID)[0].name
+
     this.setState({
-      data: newData
+      data: newData,
+      name
     })
   }
 
   render() {
+    const { width, height } = this.props;
+    const { name } = this.state;
+    
     return (
       <div className="SocialLineGraph">
         <div className="graph-info">
-          <h2>{this.props.name}, Book: {this.props.book}</h2>
+          <h2>{name}, Book: {this.props.book}</h2>
         </div>
         <LineGraph
-            width={750}
-            height={500}
+            width={width}
+            height={height}
             data={this.state.data}
         />
       </div>

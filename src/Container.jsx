@@ -8,6 +8,7 @@ import Switcher        from './Switcher';
 import Tabs            from './Tabs';
 import SocialGraph     from './SocialGraph';
 import SocialLineGraph from './SocialLineGraph';
+import LineGrapher     from './LineGrapher';
 import SocialStats     from './SocialStats';
 import RangeSlider     from './RangeSlider';
 import GraphConfig     from './GraphConfig';
@@ -113,7 +114,7 @@ class Container extends React.Component {
         'show-cog':         true,
         'show-inr':         true
       },
-      activeTab: 'SocialGraph'
+      activeTab: 'LineGraph'
     }
 
     this.fetchData = this.fetchData.bind(this);
@@ -290,12 +291,9 @@ class Container extends React.Component {
               showEdgeWeight={graphConfig['show-edge-weight']}
               data-tabkey="SocialGraph"
           />
-          <SocialLineGraph
+          <LineGrapher
               data-tabkey="LineGraph"
               data={filteredData}
-              nodeID={randomEntity.id}
-              name={randomEntity.name}
-              book={Math.ceil(Math.random()*4)}
           />
         </Switcher>
 

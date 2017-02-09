@@ -34,7 +34,7 @@ class Graph extends React.Component {
   isBridge(link) {
     const source = link.source.id || link.source;
     const target = link.target.id || link.target;
-    
+
     return this.bridgeHash[source + '-' + target] || this.bridgeHash[target + '-' + source]
   }
   
@@ -296,21 +296,21 @@ class Graph extends React.Component {
                       d.fy = null;
                       this.dragging = false;
                     })
-
+    
     this.updateDisplay();
   }
 
   componentDidUpdate(prevProps) {
     const { nodes, links, bridges } = this.props.data;
 
-    if(bridges !== prevProps.data.bridges) {
+    if(bridges !== prevProps.data.bridges || Object.keys(this.bridgeHash).length === 0) {
       this.bridgeHash = {};
       bridges.forEach((bridge) => {
         this.bridgeHash[bridge.from + '-' + bridge.to] = true;
       })
     }
 
-    if(links !== prevProps.data.links) {
+    if(links !== prevProps.data.links || Object.keys(this.linksHash).length === 0) {
       this.linksHash = {};
       links.forEach((link) => {
         this.linksHash[link.source + '-' + link.target] = true;

@@ -1,6 +1,5 @@
 import React from 'react'
 
-
 export default function Checkbox({ name, displayName, currentVal, handleChange }) {
   return (
     <div className="checkbox">
