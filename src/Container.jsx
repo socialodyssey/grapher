@@ -286,7 +286,7 @@ class Container extends React.Component {
             changeHandler={this.handleChangeTab}
         />
 
-        <Switcher show={this.state.activeTab}>
+        <Switcher show={activeTab}>
           <SocialGraph
               data={filteredData}
               showBridges={graphConfig['show-bridges']}
@@ -308,12 +308,16 @@ class Container extends React.Component {
               max={this.state.sliderMax}
               value={sliderValue} />
 
-          <GraphConfig
-              handleChange={this.handleGraphConfigChange}
-              current={graphConfig} />
+          {(activeTab === 'SocialGraph') &&
+            <GraphConfig
+                handleChange={this.handleGraphConfigChange}
+                current={graphConfig} />
+          }
 
-          <SocialStats
-              data={filteredData} />
+          {(activeTab === 'SocialGraph') &&
+            <SocialStats
+                data={filteredData} />
+          }
         </div>
       </div>
     )
