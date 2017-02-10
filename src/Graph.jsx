@@ -108,10 +108,9 @@ class Graph extends React.Component {
 
   }
   
-  getNodeHighlighter(node, link) {
+  getNodeHighlighter(node, label, link) {
     return d => {
       node
-        .selectAll('circle')
         .style('fill', (d2) => {
           if(d.id === d2.id || this.areConnected(d, d2)) {
             return colors.circleHlFill;
@@ -127,8 +126,7 @@ class Graph extends React.Component {
           return 'none';
         })
 
-      node
-        .selectAll('text')
+      label
         .style('font-size', (d2) => {
           if(d.id === d2.id || this.areConnected(d, d2)) {
             return '23px';
@@ -143,17 +141,15 @@ class Graph extends React.Component {
     }
   }
   
-  getNodeUnhighlighter(node, link) {
+  getNodeUnhighlighter(node, label, link) {
     return d => {
       if(this.dragging) return null;
       
       node
-        .selectAll('circle')
         .style('fill', colors.circleFill)
         .style('stroke', 'none')
 
-      node
-        .selectAll('text')
+      label
         .style('font-weight', 'bold')
         .style('font-size', '16px')
       
@@ -172,6 +168,7 @@ class Graph extends React.Component {
     // I think there's something with my merge logic?
     //
     container.select('.nodes').selectAll('.node').remove();
+    container.select('.labels').selectAll('.label').remove();
 
     const scaleCentrality = d3
       .scaleLinear()
@@ -196,18 +193,28 @@ class Graph extends React.Component {
 
     node = node
       .enter()
-      .append('g')
+      .append('circle')
       .merge(node)
       .attr('class', 'node')
-    
-    node
-      .append('circle')
       .attr('r', (d) => scaleCentrality.range(radiusRange)(d.centrality.in + d.centrality.out))
       .attr('fill', (d) => colors.circleFill)
       .attr('stroke-width', (d) => scaleCentrality.range(strokeRange)(d.centrality.in + d.centrality.out))
       .call(this.d3Drag)
 
-    node
+
+    let label = container
+      .select('.labels')
+      .selectAll('.label')
+
+    label = label
+      .data(nodes, n => n.id)
+
+    label
+      .exit()
+      .remove();
+
+    label = label
+      .enter()
       .append('text')
       .attr('class', 'label')
       .attr('fill', colors.text)
@@ -234,9 +241,8 @@ class Graph extends React.Component {
     this.setLinkStyle(link)
 
     node
-      .selectAll('circle')
-      .on('mouseover', this.getNodeHighlighter(node, link))
-      .on('mouseout', this.getNodeUnhighlighter(node, link))
+      .on('mouseover', this.getNodeHighlighter(node, label, link))
+      .on('mouseout', this.getNodeUnhighlighter(node, label, link))
 
     this.d3Simulation
       .nodes(nodes)
@@ -270,12 +276,10 @@ class Graph extends React.Component {
           });
 
         node
-          .selectAll('circle')
           .attr("cx", d => d.x)
           .attr("cy", d => d.y);
         
-        node
-          .selectAll('.label')
+        label 
           .attr("dx", d => {
             const centrality = d.centrality.in + d.centrality.out;
 
@@ -332,6 +336,10 @@ class Graph extends React.Component {
     container
       .append('g')
       .attr('class', 'nodes')
+    
+    container
+      .append('g')
+      .attr('class', 'labels')
 
     // Set up zooming/panning
     const zoom = d3
