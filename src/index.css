@@ -72,7 +72,7 @@ h1,h2,h3,h4,h5 {
 }
 
 .GraphConfig {
-    max-height: 10em;
+    max-height: 12em;
     flex-grow: 0;
     margin: 1em;
     padding: 2em;

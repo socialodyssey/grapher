@@ -111,6 +111,7 @@ class Container extends React.Component {
       graphConfig: {
         'show-bridges':     true,
         'show-edge-weight': true,
+        'show-direction':   false,
         'show-cog':         true,
         'show-inr':         true
       },
@@ -210,7 +211,9 @@ class Container extends React.Component {
 
       const newLinks = graphData.links
                                 .filter(filterByRange('book', sliderValue.min, sliderValue.max))
-                                .filter(({ type }) => {
+                                .filter((interaction) => {
+                                  const { type } = interaction;
+                                  
                                   if(graphConfig['show-cog'] &&
                                      (type.lastIndexOf('COG') !== -1 || type === 'PCR')) {
                                     
@@ -219,7 +222,6 @@ class Container extends React.Component {
 
                                   if(graphConfig['show-inr'] &&
                                      (type.lastIndexOf('INR') !== -1)) {
-
                                     return true
                                   }
 
@@ -289,6 +291,7 @@ class Container extends React.Component {
               data={filteredData}
               showBridges={graphConfig['show-bridges']}
               showEdgeWeight={graphConfig['show-edge-weight']}
+              showDirection={graphConfig['show-direction']}
               data-tabkey="SocialGraph"
           />
           <LineGrapherContainer

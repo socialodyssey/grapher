@@ -17,6 +17,11 @@ function GraphConfig({ handleChange, current }) {
             currentVal={current['show-edge-weight']}
             handleChange={handleChange} />
         <Checkbox
+            name="show-direction"
+            displayName="Show edge direction"
+            currentVal={current['show-direction']}
+            handleChange={handleChange} />
+        <Checkbox
             name="show-cog"
             displayName="Show COG events"
             currentVal={current['show-cog']}

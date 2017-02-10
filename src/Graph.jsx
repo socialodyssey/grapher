@@ -11,6 +11,22 @@ const colors = {
   text:            '#000'
 };
 
+function lineEndPointX (d, radius) {
+  const length = Math.sqrt(Math.pow(d.target.y - d.source.y, 2) + Math.pow(d.target.x - d.source.x, 2));
+  const scale = (length - radius) / length;
+  const offset = (d.target.x - d.source.x) - (d.target.x - d.source.x) * scale;
+  
+  return d.target.x - offset;
+}
+
+function lineEndPointY (d, radius) {
+  const length = Math.sqrt(Math.pow(d.target.y - d.source.y, 2) + Math.pow(d.target.x - d.source.x, 2));
+  const scale = (length - radius) / length;
+  const offset = (d.target.y - d.source.y) - (d.target.y - d.source.y) * scale;
+  
+  return d.target.y - offset;
+}
+
 function isWeightedEdge(edge) {
   return edge.type === 'INR.VERBAL-NEAR';
 }
@@ -46,7 +62,7 @@ class Graph extends React.Component {
   setLinkStyle(link, opts={}) {
     const { links } = this.props.data;
     const { hlFrom } = opts;
-    const { showBridges, showEdgeWeight } = this.props;
+    const { showBridges, showEdgeWeight, showDirection } = this.props;
     
     const weightScale = d3
       .scaleLinear()
@@ -80,6 +96,16 @@ class Graph extends React.Component {
 
         return showEdgeWeight && isWeightedEdge(d) ? weightScale(d.selection.text.length) : 1
       })
+    
+    link
+      .style('marker-end', (d) => {
+        if(showDirection) {
+          return 'url(#end-arrow)'
+        }
+
+        return '';
+      })
+
   }
   
   getNodeHighlighter(node, link) {
@@ -136,7 +162,8 @@ class Graph extends React.Component {
   }
 
   updateDisplay() {
-    const { nodes, links, bridges } = this.props.data;
+    const { data, showDirection }   = this.props;
+    const { nodes, links, bridges } = data;
 
     const container = this.d3Container;
 
@@ -217,8 +244,30 @@ class Graph extends React.Component {
         link
           .attr("x1", d => d.source.x)
           .attr("y1", d => d.source.y)
-          .attr("x2", d => d.target.x)
-          .attr("y2", d => d.target.y);
+          .attr("x2", d => {
+            if(!this.props.showDirection) {
+              return d.target.x;
+            }
+
+            const targetCentrality = d.target.centrality.in + d.target.centrality.out;
+            const radius = scaleCentrality.range(radiusRange)(targetCentrality);
+
+            const x2 = lineEndPointX(d, radius)
+
+            return x2;
+          })
+          .attr("y2", d => {
+            if(!this.props.showDirection) {
+              return d.target.y;
+            }
+            
+            const targetCentrality = d.target.centrality.in + d.target.centrality.out;
+            const radius = scaleCentrality.range(radiusRange)(targetCentrality);
+
+            const y2 = lineEndPointY(d, radius)
+
+            return y2
+          });
 
         node
           .selectAll('circle')
@@ -251,6 +300,23 @@ class Graph extends React.Component {
 
     this.updateHashes();
 
+    // Defs add a defs tag for defs
+    this.d3Defs = svg
+      .append('svg:defs');
+    
+    // Add arrow marker def
+    this.d3Defs
+        .append('svg:marker')
+        .attr('id', 'end-arrow')
+        .attr('viewBox', '0 0 10 10')
+        .attr('refX', 10)
+        .attr('refY', 5)
+        .attr('markerWidth', 10)
+        .attr('markerHeight', 5)
+        .attr('orient', 'auto')
+        .append('svg:path')
+        .attr("d", "M 0 0 L 10 5 L 0 10 z")
+
     // Add container group tag
     this.d3Container = svg
       .append('g')
@@ -281,7 +347,7 @@ class Graph extends React.Component {
                           .force('charge', d3.forceManyBody().strength(-3000))
                           .force('center', d3.forceCenter(width / 2, height / 2))
                           .velocityDecay(0.8)
-      
+
     this.d3Drag = d3.drag()
                     .on('start', (d) => {
                       if (!d3.event.active) this.d3Simulation.alphaTarget(0.3).restart();
