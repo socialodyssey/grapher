@@ -10,8 +10,7 @@ class LineGrapher extends React.Component {
 
     this.state = {
       showForm:  true,
-      character: 'Entities/97372', // Odysseus
-      book:      1
+      character: 'Entities/97372' // Odysseus
     }
     
     this.handleFormChange = this.handleFormChange.bind(this);
@@ -35,7 +34,7 @@ class LineGrapher extends React.Component {
   
   render() {
     const { data } = this.props;
-    const { character, book, showForm } = this.state;
+    const { character, showForm } = this.state;
     
     const { nodes } = data;
 
@@ -43,11 +42,7 @@ class LineGrapher extends React.Component {
       id:   node.id,
       name: node.name
     }))
-
-    const bookChoices = range(24).map((i) => ({
-      id:   i + 1,
-      name: i + 1
-    }))
+    .sort((a, b) => b.name < a.name ? 1 : -1)
 
     if (showForm) {
       return (
@@ -58,13 +53,6 @@ class LineGrapher extends React.Component {
               handleChange={this.handleFormChange}
               choices={characterChoices}
               currentVal={this.state.character}
-          />
-          <DropdownInput
-              name="book"
-              displayName="Book"
-              handleChange={this.handleFormChange}
-              choices={bookChoices}
-              currentVal={this.state.book}
           />
           <input className="btn" type="submit" value="OK!" onClick={this.handleFormSubmit} />
         </form>
@@ -77,7 +65,6 @@ class LineGrapher extends React.Component {
           height={400}
           data={data}
           nodeID={character}
-          book={parseInt(book)}
       />
     )
   }

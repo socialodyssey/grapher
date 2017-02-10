@@ -3,11 +3,11 @@ import Graph        from './Graph';
 import interactions from './data/interactions';
 import entities     from './data/entities';
 import bridges      from './data/bridges';
+import linenos      from './data/linenos';
 
 import Switcher             from './Switcher';
 import Tabs                 from './Tabs';
 import SocialGraph          from './SocialGraph';
-import SocialLineGraph      from './SocialLineGraph';
 import LineGrapherContainer from './LineGrapherContainer';
 import SocialStats          from './SocialStats';
 import RangeSlider          from './RangeSlider';
@@ -17,7 +17,7 @@ function filterByRange(key, a, b) {
   return o => {
     const val = o[key];
 
-    return val >= a && val <= b;
+    return val > a && val <= b;
   }
 }
 
@@ -142,7 +142,8 @@ class Container extends React.Component {
     const graphData = {
       nodes:   transformedEntities,
       links:   transformedInteractions,
-      bridges: bridges
+      bridges: bridges,
+      linenos: linenos
     }
 
     this.setState({
@@ -150,7 +151,7 @@ class Container extends React.Component {
       filteredData: graphData,
       sliderMax: maxBook,
       sliderValue: {
-        min: 1,
+        min: 0,
         max: maxBook
       }
     })
@@ -304,7 +305,7 @@ class Container extends React.Component {
           <RangeSlider
               title="Books"
               handleChange={this.handleRangeChange}
-              min={1}
+              min={0}
               max={this.state.sliderMax}
               value={sliderValue} />
 

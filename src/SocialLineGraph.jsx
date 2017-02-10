@@ -25,14 +25,23 @@ class SocialLineGraph extends React.Component {
   }
 
   updateData() {
-    const { data, nodeID, book } = this.props;
-    const { links, nodes } = data;
+    const { data, nodeID, book }    = this.props;
+    const { links, nodes, linenos } = data;
 
     let count = 0;
     const newData = links
-      .filter((link) => link.book === book)
       .filter((link) => (link.source.id || link.source) === nodeID || (link.target.id || link.target) === nodeID)
-      .map((link) => link.selection.from_line)
+      .map((link) => {
+        const book   = link.book;
+        const point  = link.selection.from_line;
+        const offset = linenos
+          .slice(0, book - 1)
+          .reduce((a, b) => a + b, 0)
+
+        console.log(book)
+          
+        return offset + point
+      })
       .sort((a, b) => a - b)
       .map((line) => ({ line, count: count++ }))
 
