@@ -28,6 +28,8 @@ class SocialLineGraph extends React.Component {
     const { data, nodeID, book }    = this.props;
     const { links, nodes, linenos } = data;
 
+    let maxBook = 1;
+
     let count = 0;
     const newData = links
       .filter((link) => (link.source.id || link.source) === nodeID || (link.target.id || link.target) === nodeID)
@@ -38,8 +40,8 @@ class SocialLineGraph extends React.Component {
           .slice(0, book - 1)
           .reduce((a, b) => a + b, 0)
 
-        console.log(book)
-          
+        maxBook = Math.max(book, maxBook);
+
         return offset + point
       })
       .sort((a, b) => a - b)
@@ -49,23 +51,29 @@ class SocialLineGraph extends React.Component {
 
     this.setState({
       data: newData,
-      name
+      name,
+      maxBook
     })
   }
 
   render() {
     const { width, height } = this.props;
-    const { name, data } = this.state;
-    
+    const { name, data, maxBook } = this.state;
+    const xDomain = [
+      0,
+      this.props.data.linenos.slice(0, maxBook).reduce((a, b) => a + b, 0)
+    ]
+
     return (
       <div className="SocialLineGraph">
         <div className="graph-info">
-          <h2>{name}, Book: {this.props.book}</h2>
+          <h2>{name}</h2>
         </div>
         <LineGraph
             width={width}
             height={height}
             data={data}
+            xDomain={xDomain}
         />
       </div>
     )

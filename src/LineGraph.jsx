@@ -32,8 +32,8 @@ class LineGraph extends React.Component {
       .y((d) => y(d.count))
       .curve(d3.curveBasis)
 
-    x.domain(d3.extent(data, (d) => d.line));
-    y.domain(d3.extent(data, (d) => d.count));
+    x.domain(this.props.xDomain || d3.extent(data, (d) => d.line))
+    y.domain(this.props.yDomain || d3.extent(data, (d) => d.count));
 
     this.d3BottomAxis
         .call(d3.axisBottom(x))
