@@ -1,5 +1,4 @@
 import React from 'react';
-import range from 'lodash.range';
 
 import DropdownInput from './DropdownInput';
 import SocialLineGraph from './SocialLineGraph';
@@ -10,16 +9,21 @@ class LineGrapher extends React.Component {
 
     this.state = {
       showForm:  true,
-      character: 'Entities/97372' // Odysseus
+      characters: ['Entities/97372'] // Odysseus
     }
     
     this.handleFormChange = this.handleFormChange.bind(this);
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
+    this.handleAddCharacter = this.handleAddCharacter.bind(this);
   }
 
   handleFormChange(name, val) {
+    const index  = name.split('-')[1];
+    let   newArr = this.state.characters.slice(0);
+    newArr[index] = val;
+    
     this.setState({
-      [name]: val
+      characters: newArr
     })
   }
 
@@ -31,10 +35,22 @@ class LineGrapher extends React.Component {
       showForm: false
     })
   }
+
+  handleAddCharacter(e) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    let newArr = this.state.characters.slice(0);
+    newArr.push('Entities/97372')
+
+    this.setState({
+      characters: newArr
+    })
+  }
   
   render() {
     const { data } = this.props;
-    const { character, showForm } = this.state;
+    const { characters, showForm } = this.state;
     
     const { nodes } = data;
 
@@ -47,13 +63,20 @@ class LineGrapher extends React.Component {
     if (showForm) {
       return (
         <form className="Form">
-          <DropdownInput
-              name="character"
-              displayName="Character"
-              handleChange={this.handleFormChange}
-              choices={characterChoices}
-              currentVal={this.state.character}
-          />
+          {
+            characters.map((character, index) => {
+              return (
+                <DropdownInput
+                    key={index}
+                    name={'character-' + index}
+                    handleChange={this.handleFormChange}
+                    choices={characterChoices}
+                    currentVal={character}
+                />
+              )
+            })
+          }
+          <button className="btn" onClick={this.handleAddCharacter}>Add Character</button>
           <input className="btn" type="submit" value="OK!" onClick={this.handleFormSubmit} />
         </form>
       )
@@ -64,7 +87,7 @@ class LineGrapher extends React.Component {
           width={600}
           height={400}
           data={data}
-          nodeID={character}
+          nodeIDs={characters}
       />
     )
   }

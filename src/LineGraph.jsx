@@ -1,6 +1,10 @@
 import React from 'react';
 import * as d3 from 'd3';
 
+function flatten(arr) {
+    return [].concat.apply(Array.prototype, arr);
+}
+
 class LineGraph extends React.Component {
   constructor(props) {
     super(props);
@@ -12,6 +16,7 @@ class LineGraph extends React.Component {
 
   updateDisplay() {
     const { data } = this.props;
+    const graphData = flatten(data).map((d) => d.data)
 
     const margin = {top: 20, right: 20, bottom: 30, left: 50};
     const svg    = d3.select(this.refs['svg']);
@@ -26,14 +31,18 @@ class LineGraph extends React.Component {
       .scaleLinear()
       .rangeRound([height, 0])
 
-    const line = d3
-      .line()
-      .x((d) => x(d.line))
-      .y((d) => y(d.count))
-      .curve(d3.curveBasis)
+    const lines = graphData.map((d) => {
+      return d3
+        .line()
+        .x((d) => x(d.line))
+        .y((d) => y(d.count))
+        .curve(d3.curveBasis)
+    })
 
-    x.domain(this.props.xDomain || d3.extent(data, (d) => d.line))
-    y.domain(this.props.yDomain || d3.extent(data, (d) => d.count));
+    const flatData  = flatten(graphData);
+
+    x.domain(this.props.xDomain || d3.extent(flatData, (d) => d.line))
+    y.domain(this.props.yDomain || d3.extent(flatData, (d) => d.count));
 
     this.d3BottomAxis
         .call(d3.axisBottom(x))
@@ -42,25 +51,29 @@ class LineGraph extends React.Component {
         .call(d3.axisLeft(y));
 
     this.d3Container
-        .select('.line')
+        .selectAll('.line')
         .remove()
-    
-    const path = this.d3Container
+
+    const paths = lines.map((line, index) => {
+      return this.d3Container
         .append('path')
         .attr('class', 'line')
         .attr('stroke', 'steelblue')
         .attr('stroke-width', 2)
         .attr('fill', 'none')
-        .attr('d', line(data));
+        .attr('d', line(graphData[index]));
+    })
 
-    const pathLength = path.node().getTotalLength();
+    paths.forEach((path) => {
+      const pathLength = path.node().getTotalLength();
 
-    path
-      .attr('stroke-dasharray', pathLength + ' ' + pathLength)
-      .attr('stroke-dashoffset', pathLength)
-      .transition()
-      .duration(1000)
-      .attr('stroke-dashoffset', 0)
+      path
+        .attr('stroke-dasharray', pathLength + ' ' + pathLength)
+        .attr('stroke-dashoffset', pathLength)
+        .transition()
+        .duration(1000)
+        .attr('stroke-dashoffset', 0)
+    })
   }
 
   componentDidMount() {
