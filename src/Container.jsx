@@ -5,6 +5,7 @@ import entities     from './data/entities';
 import bridges      from './data/bridges';
 import linenos      from './data/linenos';
 
+import { mapCentralityFor } from './lib/graphUtils';
 import Switcher             from './Switcher';
 import Tabs                 from './Tabs';
 import SocialGraph          from './SocialGraph';
@@ -21,57 +22,8 @@ function filterByRange(key, a, b) {
   }
 }
 
-
-function getWeight(arr) {
-  return arr
-    .filter(i => i.type === 'INR.VERBAL-NEAR')
-    .map(i => i.selection.text.length)
-    .reduce((a, b) => a + b, 0);
-}
-
 function keyChanged(key, o1, o2) {
   return o1[key] !== o2[key];
-}
-
-function mapCentralityFor(interactions) {
-  return entity => {
-    const outs = interactions
-      .filter((link) =>
-        (
-          (link.source === entity.id)))
-    
-    const ins = interactions
-      .filter((link) =>
-        (
-          (link.target === entity.id)))
-
-    const alpha = 0.5;
-    
-    const outWeight = getWeight(outs);
-    const inWeight = getWeight(ins);
-
-    const outCent = outs.length;
-    const inCent  = ins.length;
-
-
-    const outWeighted = outCent * Math.pow((outWeight / (outCent || 1)), alpha);
-
-    const inWeighted  = inCent * Math.pow((inWeight / (inCent || 1)), alpha);
-
-    const totalEdges = inCent + outCent;
-    const totalWeight = outWeighted + inWeighted;
-
-    return {
-      ...entity,
-      centrality: {
-        out: outCent,
-        in:  inCent,
-        outWeighted: Math.round(outWeighted),
-        inWeighted:  Math.round(inWeighted),
-        weighted:    Math.round(totalWeight)
-      }
-    }
-  }
 }
 
 function transformEntity(entity) {

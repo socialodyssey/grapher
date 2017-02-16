@@ -174,7 +174,7 @@ class Graph extends React.Component {
       .scaleLinear()
       .domain([
         0,
-        d3.max(nodes, (d) => d.centrality.out + d.centrality.in)
+        d3.max(nodes, (d) => d.centrality.weighted)
       ])
 
     const radiusRange = [1, 70];
@@ -196,9 +196,9 @@ class Graph extends React.Component {
       .append('circle')
       .merge(node)
       .attr('class', 'node')
-      .attr('r', (d) => scaleCentrality.range(radiusRange)(d.centrality.in + d.centrality.out))
+      .attr('r', (d) => scaleCentrality.range(radiusRange)(d.centrality.weighted))
       .attr('fill', (d) => colors.circleFill)
-      .attr('stroke-width', (d) => scaleCentrality.range(strokeRange)(d.centrality.in + d.centrality.out))
+      .attr('stroke-width', (d) => scaleCentrality.range(strokeRange)(d.centrality.weighted))
       .call(this.d3Drag)
 
 

@@ -1,6 +1,7 @@
 import React from 'react';
 
-import LineGraph from './LineGraph';
+import { mapCentralityFor } from './lib/graphUtils';
+import LineGraph            from './LineGraph';
 
 class SocialLineGraph extends React.Component {
   constructor(props) {
@@ -32,6 +33,8 @@ class SocialLineGraph extends React.Component {
     let count   = 0;
     let maxBook = 1;
     
+    const node = nodes.filter((node) => node.id === nodeID)[0];
+    
     const newData = links
       .filter((link) => {
         const source = link.source.id || link.source;
@@ -51,9 +54,8 @@ class SocialLineGraph extends React.Component {
         return offset + point
       })
       .sort((a, b) => a - b)
-      .map((line) => ({ line, count: count++ }))
+      .map((line) => ({ line, count: mapCentralityFor(links, line)(node).centrality.weighted }))
 
-    const name = nodes.filter((node) => node.id === nodeID)[0].name
 
     const xDomain = [
       0,
@@ -62,7 +64,7 @@ class SocialLineGraph extends React.Component {
 
     return {
       data: newData,
-      name,
+      name: node.name,
       xDomain
     }
   }
