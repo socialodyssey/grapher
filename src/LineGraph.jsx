@@ -1,6 +1,8 @@
 import React from 'react';
 import * as d3 from 'd3';
 
+const margin = {top: 20, right: 80, bottom: 30, left: 50};
+
 function flatten(arr) {
     return [].concat.apply(Array.prototype, arr);
 }
@@ -18,7 +20,6 @@ class LineGraph extends React.Component {
     const { data } = this.props;
     const graphData = flatten(data).map((d) => d.data)
 
-    const margin = {top: 20, right: 20, bottom: 30, left: 50};
     const svg    = d3.select(this.refs['svg']);
     const width  = parseInt(svg.attr('width')) - margin.left - margin.right;
     const height = parseInt(svg.attr('height')) - margin.top - margin.bottom;
@@ -55,30 +56,45 @@ class LineGraph extends React.Component {
         .remove()
 
     const paths = lines.map((line, index) => {
-      return this.d3Container
+      const path = this.d3Container
+        .append('g');
+
+
+      path
         .append('path')
         .attr('class', 'line')
         .attr('stroke', 'steelblue')
         .attr('stroke-width', 2)
         .attr('fill', 'none')
         .attr('d', line(graphData[index]));
+
+      const lastDatum = graphData[index].slice(-1)[0];
+      
+      path
+        .append('text')
+        .attr('class', 'label')
+        .attr('fill', '#000')
+        .attr("transform", "translate(" + x(lastDatum.line) + "," + y(lastDatum.count) + ")")
+        .attr('text-anchor', 'start')
+        .attr('stroke', 'none')
+        .attr('font-weight', 'bold')
+        .text(data[index].name);
     })
 
     paths.forEach((path) => {
       const pathLength = path.node().getTotalLength();
 
       path
+        .select('.line')
         .attr('stroke-dasharray', pathLength + ' ' + pathLength)
         .attr('stroke-dashoffset', pathLength)
         .transition()
         .duration(1000)
-        .attr('stroke-dashoffset', 0)
+        .attr('stroke-dashoffset', 0);
     })
   }
 
   componentDidMount() {
-    const margin = {top: 20, right: 20, bottom: 30, left: 50};
-          
     const svg    = d3.select(this.refs['svg'])
     const width  = parseInt(svg.attr('width')) - margin.left - margin.right;
     const height = parseInt(svg.attr('height')) - margin.top - margin.bottom;
@@ -111,7 +127,7 @@ class LineGraph extends React.Component {
         .attr('dy', '0.71em')
         .attr('text-anchor', 'end')
         .attr('stroke', 'none')
-        .text('Interactions');
+        .text('Centrality');
 
     this.updateDisplay()
   }
