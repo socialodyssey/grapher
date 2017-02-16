@@ -78,11 +78,14 @@ class LineGraph extends React.Component {
         .attr('text-anchor', 'start')
         .attr('stroke', 'none')
         .attr('font-weight', 'bold')
+        .attr('opacity', '0')
         .text(data[index].name);
+
+      return path;
     })
 
     paths.forEach((path) => {
-      const pathLength = path.node().getTotalLength();
+      const pathLength = path.select('.line').node().getTotalLength();
 
       path
         .select('.line')
@@ -91,6 +94,12 @@ class LineGraph extends React.Component {
         .transition()
         .duration(1000)
         .attr('stroke-dashoffset', 0);
+
+      path
+        .select('text')
+        .transition()
+        .duration(1400)
+        .attr('opacity', '1')
     })
   }
 
