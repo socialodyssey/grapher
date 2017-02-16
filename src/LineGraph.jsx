@@ -54,6 +54,10 @@ class LineGraph extends React.Component {
     this.d3Container
         .selectAll('.line')
         .remove()
+    
+    this.d3Container
+        .selectAll('.label')
+        .remove()
 
     const paths = lines.map((line, index) => {
       const path = this.d3Container
