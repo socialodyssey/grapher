@@ -71,7 +71,6 @@ export function mapCentralityFor(interactions, lines) {
     const outCent = outs.length;
     const inCent  = ins.length;
 
-
     const outWeighted = outCent * Math.pow((outWeight / (outCent || 1)), alpha);
 
     const inWeighted  = inCent * Math.pow((inWeight / (inCent || 1)), alpha);

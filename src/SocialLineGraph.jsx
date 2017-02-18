@@ -60,13 +60,13 @@ class SocialLineGraph extends React.Component {
     const xDomain = [
       0,
       this.props.data.linenos.slice(0, maxBook).reduce((a, b) => a + b, 0)
-    ]
+    ];
 
     return {
-      data: newData,
+      data: [{line: 0, count: 0}].concat(newData),
       name: node.name,
       xDomain
-    }
+    };
   }
 
   updateData() {
