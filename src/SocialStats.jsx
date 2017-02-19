@@ -1,11 +1,55 @@
 import React from 'react';
 
 class SocialStats extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      sortBy: 'weighted'
+    }
+
+    this.handleHeaderClick = this.handleHeaderClick.bind(this);
+  }
+
+  handleHeaderClick(e) {
+    const { textContent } = e.target;
+
+    let key = '';
+    
+    switch(textContent) {
+      case 'Out-degree':
+        key = 'out'
+        break;
+      case 'Out-weight':
+        key = 'outWeighted'
+        break;
+      case 'In-degree':
+        key = 'in'
+        break;
+      case 'In-weight':
+        key = 'inWeighted'
+        break;
+      case 'Weighted total':
+        key = 'weighted'
+        break;
+      default:
+        break;
+    }
+
+    if(key) {
+      this.setState({
+        sortBy: key
+      })
+    }
+  }
+  
   render() {
+    const { sortBy } = this.state;
+
     return (
       <table className="SocialStats">
         <tbody>
-          <tr>
+          <tr onClick={this.handleHeaderClick}>
             <th>Character</th>
             <th>Out-degree</th>
             <th>Out-weight</th>
@@ -17,11 +61,11 @@ class SocialStats extends React.Component {
           {
             this.props.data.nodes
                 .sort((a, b) => {
-                  if(a.centrality.weighted === b.centrality.weighted) {
+                  if(a.centrality[sortBy] === b.centrality[sortBy]) {
                     return b.name < a.name ? 1 : -1;
                   }
 
-                  return b.centrality.weighted - a.centrality.weighted;
+                  return b.centrality[sortBy] - a.centrality[sortBy];
                 })
                 .map((d) => {
                   return (

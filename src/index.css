@@ -46,10 +46,15 @@ h1,h2,h3,h4,h5 {
     text-transform: uppercase;
     padding: 1em;
     border-right: 3px dotted #d8d8d8;
+    cursor: pointer;
 }
 
 .SocialStats th:last-child {
     border-right: none;
+}
+
+.SocialStats th:hover {
+    color: #515151;
 }
 
 .SocialStats td {
