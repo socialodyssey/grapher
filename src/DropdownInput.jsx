@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function DropdownInput({ name, displayName, choices, currentVal, handleChange }) {
+export default function DropdownInput({ name, displayName, choices, currentVal, handleChange, onRemove }) {
   return (
     <div className="DropdownInput">
       {displayName &&
@@ -15,6 +15,9 @@ export default function DropdownInput({ name, displayName, choices, currentVal, 
           })
         }
       </select>
+      {onRemove &&
+       <span className="remove" onClick={onRemove}>x</span>
+      }
     </div>
   )
 }

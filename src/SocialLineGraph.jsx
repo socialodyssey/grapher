@@ -101,13 +101,14 @@ class SocialLineGraph extends React.Component {
   }
 
   render() {
-    const { width, height } = this.props;
+    const { width, height, onClose } = this.props;
     const { name, data, xDomain } = this.state;
 
     return (
       <div className="SocialLineGraph">
         <div className="graph-info">
-          <h2>{data.map((d, index) => index === (data.length - 1) ? d.name : d.name + ', ')}</h2>
+          <h2 className="graph-title">{data.map((d, index) => index === (data.length - 1) ? d.name : d.name + ', ')}</h2>
+          <div className="close-btn" onClick={onClose}>(Change)</div>
         </div>
         <LineGraph
             width={width}

@@ -67,6 +67,20 @@ h1,h2,h3,h4,h5 {
     border-right: none;
 }
 
+.SocialLineGraph .graph-title {
+    display: inline-block;
+}
+
+.SocialLineGraph .close-btn {
+    display: inline-block;
+    cursor: pointer;
+    margin-left: 1em;
+}
+
+.SocialLineGraph .close-btn:hover {
+    color: #515151;
+}
+
 .RangeSlider {
     flex-grow: 1;
     height: 6em;
@@ -114,9 +128,17 @@ h1,h2,h3,h4,h5 {
     align-items: center;
 }
 
-.DropdownInput .label {
+.DropdownInput {
+    display: flex;
+}
+
+.DropdownInput .remove {
     display: inline-block;
-    min-width: 20%;
+    margin: 0.5em 1em;
+    margin-right: 0;
+    font-weight: bold;
+    color: #C3423F;
+    cursor: pointer;
 }
 
 .DropdownInput .select {

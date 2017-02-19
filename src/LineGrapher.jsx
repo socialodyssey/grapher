@@ -12,10 +12,12 @@ class LineGrapher extends React.Component {
       characters: ['Entities/97372'] // Odysseus
     }
     
-    this.handleFormChange = this.handleFormChange.bind(this);
-    this.handleFormSubmit = this.handleFormSubmit.bind(this);
-    this.handleAddCharacter = this.handleAddCharacter.bind(this);
-    this.randomEntity = this.randomEntity.bind(this);
+    this.handleFormChange      = this.handleFormChange.bind(this);
+    this.handleFormSubmit      = this.handleFormSubmit.bind(this);
+    this.handleAddCharacter    = this.handleAddCharacter.bind(this);
+    this.handleRemoveCharacter = this.handleRemoveCharacter.bind(this);
+    this.handleGraphClose      = this.handleGraphClose.bind(this);
+    this.randomEntity          = this.randomEntity.bind(this);
   }
 
   handleFormChange(name, val) {
@@ -46,6 +48,25 @@ class LineGrapher extends React.Component {
 
     this.setState({
       characters: newArr
+    })
+  }
+  
+  handleRemoveCharacter(index) {
+    const { characters } = this.state;
+    const newArr = characters
+      .slice(0, index)
+      .concat(
+        characters.slice(index + 1)
+      )
+
+    this.setState({
+      characters: newArr
+    })
+  }
+
+  handleGraphClose() {
+    this.setState({
+      showForm: true
     })
   }
   
@@ -87,6 +108,7 @@ class LineGrapher extends React.Component {
                     key={index}
                     name={'character-' + index}
                     handleChange={this.handleFormChange}
+                    onRemove={index === 0 ? null : this.handleRemoveCharacter.bind(this, index)}
                     choices={characterChoices}
                     currentVal={character}
                 />
@@ -101,6 +123,7 @@ class LineGrapher extends React.Component {
 
     return (
       <SocialLineGraph
+          onClose={this.handleGraphClose}
           width={600}
           height={400}
           data={data}
