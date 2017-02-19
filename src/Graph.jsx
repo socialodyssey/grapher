@@ -238,6 +238,10 @@ class Graph extends React.Component {
       .append('line')
       .merge(link);
 
+    link.on('mouseover', (d) => {
+      console.log(d.type)
+    })
+
     this.setLinkStyle(link)
 
     node
