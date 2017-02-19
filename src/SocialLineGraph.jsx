@@ -56,7 +56,7 @@ class SocialLineGraph extends React.Component {
       })
       .sort((a, b) => a - b)
       .map((line) => ({ line, count: mapCentralityFor(links, line)(node).centrality.weighted }))
-      .map(({ line, count }) => {
+      /*.map(({ line, count }) => {
         let total_lines = 0;
         let book        = 0;
         
@@ -73,14 +73,14 @@ class SocialLineGraph extends React.Component {
           line: book + (linesThrough / linesInBk),
           count
         }
-      })
+      })*/
 
 
     const xDomain = [
-      minBook,
-      maxBook
-      //newData[0].line,
-      //linenos.slice(0, maxBook).reduce((a, b) => a + b, 0)
+      //minBook,
+      //maxBook
+      newData[0].line,
+      linenos.slice(0, maxBook).reduce((a, b) => a + b, 0)
     ];
 
     return {

@@ -74,7 +74,6 @@ class Container extends React.Component {
     this.handleRangeChange = this.handleRangeChange.bind(this);
     this.handleGraphConfigChange = this.handleGraphConfigChange.bind(this);
     this.handleChangeTab = this.handleChangeTab.bind(this);
-    this.randomEntity = this.randomEntity.bind(this);
   }
 
   // MILO: This used to be async, hence the overwrought design
@@ -201,26 +200,8 @@ class Container extends React.Component {
     }
   }
 
-  randomEntity() {
-    const { filteredData } = this.state
-    
-    if(!filteredData) {
-      return ''
-    }
-    
-    const len = filteredData.nodes.length;
-
-    if(!len) {
-      return ''
-    }
-
-    return filteredData.nodes[Math.floor(Math.random()*len)]
-  }
-
   render() {
     const { filteredData, sliderValue, graphConfig, activeTab } = this.state;
-
-    const randomEntity = this.randomEntity()
 
     return (
       <div className="odyssey-grapher">

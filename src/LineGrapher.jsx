@@ -15,6 +15,7 @@ class LineGrapher extends React.Component {
     this.handleFormChange = this.handleFormChange.bind(this);
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
     this.handleAddCharacter = this.handleAddCharacter.bind(this);
+    this.randomEntity = this.randomEntity.bind(this);
   }
 
   handleFormChange(name, val) {
@@ -41,11 +42,27 @@ class LineGrapher extends React.Component {
     e.preventDefault();
 
     let newArr = this.state.characters.slice(0);
-    newArr.push('Entities/97372')
+    newArr.push(this.randomEntity())
 
     this.setState({
       characters: newArr
     })
+  }
+  
+  randomEntity() {
+    const { data } = this.props
+    
+    if(!data) {
+      return ''
+    }
+    
+    const len = data.nodes.length;
+
+    if(!len) {
+      return ''
+    }
+
+    return data.nodes[Math.floor(Math.random()*len)]._id
   }
   
   render() {
