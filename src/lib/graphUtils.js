@@ -48,10 +48,7 @@ function filterForLines(lines) {
   }
 }
 
-export function mapCentralityFor(interactions, lines) {
-  interactions = interactions
-    .filter(filterForLines(lines))
-    
+export function mapCentralityFor(interactions) {
   return entity => {
     const outs = interactions
       .filter((link) =>
@@ -88,5 +85,30 @@ export function mapCentralityFor(interactions, lines) {
         weighted:    Math.round(totalWeight)
       }
     }
+  }
+}
+
+export function createCentralityGetter(interactions) {
+  const calculatedLines = {};
+  
+  return (entity, lines) => {
+    const eID     = entity._id;
+    const lineKey = lines.min ? lines.min + '-' + lines.max : lines;
+    
+    if(!calculatedLines[eID]) {
+      calculatedLines[eID] = {}
+    }
+    
+    if(calculatedLines[eID] && calculatedLines[eID][lineKey]) {
+      return calculatedLines[eID][lineKey];
+    }
+
+    const filteredInteractions = interactions
+      .filter(filterForLines(lines))
+
+    const res = mapCentralityFor(filteredInteractions)(entity)
+    
+    calculatedLines[eID][lineKey] = res;
+    return res;
   }
 }

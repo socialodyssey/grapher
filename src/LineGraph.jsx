@@ -3,6 +3,15 @@ import * as d3 from 'd3';
 
 const margin = {top: 20, right: 90, bottom: 30, left: 50};
 
+const lineColors = [
+  '#5BC0EB',
+  '#FDE74C',
+  '#bababa',
+  '#FDE74C',
+  '#C3423F',
+  '#000'
+];
+
 function flatten(arr) {
     return [].concat.apply(Array.prototype, arr);
 }
@@ -63,11 +72,11 @@ class LineGraph extends React.Component {
       const path = this.d3Container
         .append('g');
 
-
+      const color = lineColors[index % lineColors.length];
       path
         .append('path')
         .attr('class', 'line')
-        .attr('stroke', 'steelblue')
+        .attr('stroke', color)
         .attr('stroke-width', 2)
         .attr('fill', 'none')
         .attr('d', line(graphData[index]));
@@ -77,7 +86,7 @@ class LineGraph extends React.Component {
       path
         .append('text')
         .attr('class', 'label')
-        .attr('fill', '#000')
+        .attr('fill', color)
         .attr("transform", "translate(" + x(lastDatum.line) + "," + y(lastDatum.count) + ")")
         .attr('text-anchor', 'start')
         .attr('stroke', 'none')

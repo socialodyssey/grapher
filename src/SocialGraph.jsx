@@ -11,16 +11,25 @@ class SocialGraph extends React.Component {
       width: document.body.clientWidth,
       height: window.innerHeight * 0.66
     }
+
+    this.handleResize = this.handleResize.bind(this);
+  }
+
+  handleResize() {
+    this.setState({
+      width: document.body.clientWidth,
+      height: window.innerHeight * 0.66
+    })
   }
   
   componentDidMount() {
-    window.addEventListener('resize', () => {
-      this.setState({
-        width: document.body.clientWidth,
-        height: window.innerHeight * 0.66
-      })
-    })
+    window.addEventListener('resize', this.handleResize)
   }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.handleResize)
+  }
+  
   render() {
     const { width, height } = this.state;
     
