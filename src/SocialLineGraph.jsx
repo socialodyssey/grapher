@@ -30,8 +30,8 @@ class SocialLineGraph extends React.Component {
     const { data }                  = this.props;
     const { links, nodes, linenos } = data;
 
-    let count   = 0;
     let maxBook = 1;
+    let minBook = 24;
     
     const node = nodes.filter((node) => node.id === nodeID)[0];
     
@@ -50,20 +50,41 @@ class SocialLineGraph extends React.Component {
           .reduce((a, b) => a + b, 0)
 
         maxBook = Math.max(book, maxBook);
+        minBook = Math.min(book, minBook);
 
         return offset + point
       })
       .sort((a, b) => a - b)
       .map((line) => ({ line, count: mapCentralityFor(links, line)(node).centrality.weighted }))
+      .map(({ line, count }) => {
+        let total_lines = 0;
+        let book        = 0;
+        
+        while(total_lines < line) {
+          total_lines += linenos[book];
+          book += 1;
+        }
+
+        const linesInBk      = linenos[book - 1];
+        const linesRemaining = Math.abs(line - total_lines);
+        const linesThrough   = linesInBk - linesRemaining;
+
+        return {
+          line: book + (linesThrough / linesInBk),
+          count
+        }
+      })
 
 
     const xDomain = [
-      0,
-      this.props.data.linenos.slice(0, maxBook).reduce((a, b) => a + b, 0)
+      minBook,
+      maxBook
+      //newData[0].line,
+      //linenos.slice(0, maxBook).reduce((a, b) => a + b, 0)
     ];
 
     return {
-      data: [{line: 0, count: 0}].concat(newData),
+      data: [{ line: minBook, count: 0 }].concat(newData),
       name: node.name,
       xDomain
     };
@@ -81,7 +102,7 @@ class SocialLineGraph extends React.Component {
 
   render() {
     const { width, height } = this.props;
-    const { name, data } = this.state;
+    const { name, data, xDomain } = this.state;
 
     return (
       <div className="SocialLineGraph">
@@ -92,6 +113,8 @@ class SocialLineGraph extends React.Component {
             width={width}
             height={height}
             data={data}
+            yLabel="Centrality"
+            xLabel="Book"
         />
       </div>
     )

@@ -1,7 +1,7 @@
 import React from 'react';
 import * as d3 from 'd3';
 
-const margin = {top: 20, right: 80, bottom: 30, left: 50};
+const margin = {top: 20, right: 90, bottom: 30, left: 50};
 
 function flatten(arr) {
     return [].concat.apply(Array.prototype, arr);
@@ -112,6 +112,8 @@ class LineGraph extends React.Component {
     const width  = parseInt(svg.attr('width')) - margin.left - margin.right;
     const height = parseInt(svg.attr('height')) - margin.top - margin.bottom;
 
+    const { xLabel, yLabel } = this.props;
+
     this.d3Container = svg
       .append('g')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
@@ -127,7 +129,7 @@ class LineGraph extends React.Component {
         .attr('dy', '-1em')
         .attr('text-anchor', 'end')
         .attr('stroke', 'none')
-        .text('Line');
+        .text(xLabel);
     
     this.d3LeftAxis = this.d3Container
         .append('g');
@@ -140,7 +142,7 @@ class LineGraph extends React.Component {
         .attr('dy', '0.71em')
         .attr('text-anchor', 'end')
         .attr('stroke', 'none')
-        .text('Centrality');
+        .text(yLabel);
 
     this.updateDisplay()
   }
