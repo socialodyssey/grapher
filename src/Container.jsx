@@ -1,4 +1,5 @@
 import React        from 'react';
+import qs           from 'qs';
 import Graph        from './Graph';
 import interactions from './data/interactions';
 import entities     from './data/entities';
@@ -42,11 +43,35 @@ function transformInteraction({ _from, _to, _id, ...rest }) {
   }
 }
 
+function router(location) {
+  const { pathname, search, hash } = location;
+
+  const query = qs.parse(search.split('?')[1]);
+
+  console.log(query)
+  
+  const splitPath = pathname.split('/');
+  const routeState = {};
+
+  routeState.activeTab = splitPath[1];
+
+  if(!routeState.activeTab) {
+    routeState.activeTab = 'graph';
+  }
+
+  routeState.sliderValue = {
+    min: +query.fromBook || 0,
+    max: +query.toBook   || 8
+  }
+
+  return routeState;
+}
+
 class Container extends React.Component {
   constructor(props) {
     super(props);
-
-    this.state = {
+    
+    this.state = Object.assign({}, {
       graphData: {
         links: [],
         nodes: []
@@ -59,7 +84,7 @@ class Container extends React.Component {
         min: 1,
         max: 2
       },
-      sliderMax: 2,
+      sliderMax: 8,
       graphConfig: {
         'show-bridges':     true,
         'show-edge-weight': true,
@@ -68,7 +93,7 @@ class Container extends React.Component {
         'show-inr':         true
       },
       activeTab: 'SocialGraph'
-    }
+    }, router(props.history.location))
 
     this.fetchData = this.fetchData.bind(this);
     this.handleRangeChange = this.handleRangeChange.bind(this);
@@ -104,7 +129,8 @@ class Container extends React.Component {
       sliderValue: {
         min: 0,
         max: maxBook
-      }
+      },
+      ...router(this.props.history.location)
     })
   }
 
@@ -147,13 +173,26 @@ class Container extends React.Component {
   }
 
   handleChangeTab(tabKey) {
-    this.setState({
-      activeTab: tabKey
+    const { history } = this.props;
+
+    history.push({
+      pathname: '/' + tabKey
     })
   }
 
   componentDidMount() {
+    const { history } = this.props;
+
     this.fetchData();
+
+    this.urlListener = history.listen((location, action) => {
+      this.setState({
+        ...router(location),
+        needsFiltering: true
+      })
+
+      console.log(router(location))
+    })
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -208,11 +247,11 @@ class Container extends React.Component {
         <Tabs
             tabs={[
               {
-                key:     'SocialGraph',
+                key:     'graph',
                 text:    'force'
               },
               {
-                key:     'LineGraph',
+                key:     'line',
                 text:    'line'
               }
             ]}
@@ -226,10 +265,10 @@ class Container extends React.Component {
               showBridges={graphConfig['show-bridges']}
               showEdgeWeight={graphConfig['show-edge-weight']}
               showDirection={graphConfig['show-direction']}
-              data-tabkey="SocialGraph"
+              data-tabkey="graph"
           />
           <LineGrapherContainer
-              data-tabkey="LineGraph"
+              data-tabkey="line"
               data={filteredData}
           />
         </Switcher>
@@ -242,13 +281,13 @@ class Container extends React.Component {
               max={this.state.sliderMax}
               value={sliderValue} />
 
-          {(activeTab === 'SocialGraph') &&
+          {(activeTab === 'graph') &&
             <GraphConfig
                 handleChange={this.handleGraphConfigChange}
                 current={graphConfig} />
           }
 
-          {(activeTab === 'SocialGraph') &&
+          {(activeTab === 'graph') &&
             <SocialStats
                 data={filteredData} />
           }

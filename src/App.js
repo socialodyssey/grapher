@@ -8,7 +8,7 @@ class App extends Component {
   render() {
     return (
       <div className="odyssey-grapher">
-          <Container />
+          <Container history={this.props.history} />
       </div>
     );
   }
