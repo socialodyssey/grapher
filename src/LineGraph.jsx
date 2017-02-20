@@ -71,16 +71,16 @@ class LineGraph extends React.Component {
     this.d3LeftAxis
         .call(axisLeft);
 
-    this.d3Container
+    this.d3LinesContainer
         .selectAll('.line')
         .remove()
     
-    this.d3Container
+    this.d3LinesContainer
         .selectAll('.label')
         .remove()
 
     const paths = lines.map((line, index) => {
-      const path = this.d3Container
+      const path = this.d3LinesContainer
         .append('g');
 
       const color = lineColors[index % lineColors.length];
@@ -125,6 +125,48 @@ class LineGraph extends React.Component {
         .duration(1400)
         .attr('opacity', '1')
     })
+
+    function getLineAt(mouseX) {
+      const point = Math.round(x.invert(mouseX));
+      
+      if(!lineMarkings) {
+        return point;
+      }
+
+      for(let i=0; i < lineMarkings.length; i++) {
+        const mark = lineMarkings[i];
+
+        if(mark.point > point) {
+          const offset = lineMarkings
+            .slice(0, i)
+            .map(m => m.point)
+            .slice(-1)[0];
+
+          return point - offset;
+        }
+      }
+
+      // Otherwise we want the last marking
+      const offset = lineMarkings
+        .map(m => m.point)
+        .slice(-1)[0];
+
+      return point - offset;
+    }
+
+    this.d3Overlay
+        .on('mousemove', () => {
+          const mouse = d3.mouse(this.d3Overlay.node());
+
+          this.d3HelperLine
+              .select('line')
+              .attr('transform', `translate(${mouse[0]} 0)`);
+
+          this.d3HelperLine
+                 .select('text')
+                 .attr('transform', `translate(${mouse[0] + 8} ${mouse[1]})`)
+                 .text(`LINE ${Math.round(getLineAt(mouse[0]))}`)
+        })
   }
 
   componentDidMount() {
@@ -137,6 +179,8 @@ class LineGraph extends React.Component {
     this.d3Container = svg
       .append('g')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    this.d3LinesContainer = this.d3Container.append('g')
     
     this.d3BottomAxis = this.d3Container
         .append('g')
@@ -163,6 +207,41 @@ class LineGraph extends React.Component {
         .attr('text-anchor', 'end')
         .attr('stroke', 'none')
         .text(yLabel);
+
+    this.d3HelperLine = this.d3Container
+        .append('g')
+        .attr('opacity', 0);
+
+    this.d3HelperLine
+        .append('line')
+        .attr('stroke', 'green')
+        .attr('stroke-dasharray', '3, 3')
+        .attr('x1', 0)
+        .attr('y1', 0)
+        .attr('x2', 0)
+        .attr('y2', height);
+
+    this.d3HelperLine
+        .append('text')
+        .attr('fill', 'green')
+        .attr('stroke', 'none');
+
+    this.d3Overlay = this.d3Container
+        .append('rect')
+        .attr('class', 'overlay')
+        .attr('width', width)
+        .attr('height', height)
+        .attr('opacity', 0)
+        .on('mouseover', () => {
+          this.d3HelperLine
+              .transition()
+              .attr('opacity', 1);
+        })
+        .on('mouseout', () => {
+          this.d3HelperLine
+              .transition()
+              .attr('opacity', 0);
+        });
 
     this.updateDisplay()
   }
