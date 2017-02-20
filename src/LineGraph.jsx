@@ -5,15 +5,14 @@ const margin = {top: 20, right: 90, bottom: 30, left: 50};
 
 const lineColors = [
   '#5BC0EB',
-  '#FDE74C',
-  '#bababa',
-  '#FDE74C',
   '#C3423F',
-  '#000'
+  '#000',
+  '#FDE74C',
+  '#bababa'
 ];
 
 function flatten(arr) {
-    return [].concat.apply(Array.prototype, arr);
+  return [].concat.apply(Array.prototype, arr);
 }
 
 class LineGraph extends React.Component {
@@ -26,7 +25,7 @@ class LineGraph extends React.Component {
   }
 
   updateDisplay() {
-    const { data } = this.props;
+    const { data, lineMarkings } = this.props;
     const graphData = flatten(data).map((d) => d.data)
 
     const svg    = d3.select(this.refs['svg']);
@@ -54,11 +53,23 @@ class LineGraph extends React.Component {
     x.domain(this.props.xDomain || d3.extent(flatData, (d) => d.line))
     y.domain(this.props.yDomain || d3.extent(flatData, (d) => d.count));
 
+    const axisBottom = d3.axisBottom(x);
+    const axisLeft   = d3.axisLeft(y);
+
+    if (lineMarkings) {
+      const ticks = lineMarkings.map(x => x.point);
+      axisBottom
+        .tickValues(ticks)
+        .tickFormat((d, index) => {
+          return lineMarkings[index].text
+        })
+    }
+
     this.d3BottomAxis
-        .call(d3.axisBottom(x))
+        .call(axisBottom)
 
     this.d3LeftAxis
-        .call(d3.axisLeft(y));
+        .call(axisLeft);
 
     this.d3Container
         .selectAll('.line')
