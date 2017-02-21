@@ -17,6 +17,12 @@ class SocialLineGraph extends React.Component {
   }
 
   componentDidMount() {
+    const { data } = this.props;
+    
+    if(!data || !data.nodes.length || !data.links.length || !data.linenos.length) {
+      return
+    }
+    
     this.updateData();
   }
 

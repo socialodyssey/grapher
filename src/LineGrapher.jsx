@@ -8,8 +8,8 @@ class LineGrapher extends React.Component {
     super(props);
 
     this.state = {
-      showForm:  true,
-      characters: ['Entities/97372'] // Odysseus
+      showForm:   !props.characters,
+      characters: props.characters  || ['Entities/97372'] // Odysseus
     }
     
     this.handleFormChange      = this.handleFormChange.bind(this);

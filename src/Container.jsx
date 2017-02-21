@@ -57,12 +57,22 @@ function router(location) {
     routeState.activeTab = 'graph';
   }
 
-  routeState.sliderValue = {
-    min: +query.fromBook || 0,
-    max: +query.toBook   || 8
+  if(query.fromBook || query.toBook) {
+    routeState.sliderValue = {
+      min: +query.fromBook || 0,
+      max: +query.toBook   || 8
+    }
+    
+    routeState.needsFiltering = true;
   }
 
-  routeState.needsFiltering = true;
+  if(query.graph) {
+    routeState.defaultLineGraphs = Object
+      .keys(query.graph)
+      .map((key) => {
+        return query.graph[key].map(id => 'Entities/' + id)
+      });
+  }
 
   return routeState;
 }
@@ -235,7 +245,13 @@ class Container extends React.Component {
   }
 
   render() {
-    const { filteredData, sliderValue, graphConfig, activeTab } = this.state;
+    const {
+      filteredData,
+      sliderValue,
+      graphConfig,
+      activeTab,
+      defaultLineGraphs
+    } = this.state;
 
     return (
       <div className="odyssey-grapher">
@@ -265,6 +281,7 @@ class Container extends React.Component {
           <LineGrapherContainer
               data-tabkey="line"
               data={filteredData}
+              defaultGraphs={defaultLineGraphs}
           />
         </Switcher>
 

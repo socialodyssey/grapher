@@ -7,8 +7,10 @@ class LineGrapherContainer extends React.Component {
   constructor(props) {
     super(props);
 
+    const defaultGraphs = props.defaultGraphs || [null];
+
     this.state = {
-      graphs: 1
+      graphs: defaultGraphs
     }
 
     this.handleAddGraph = this.handleAddGraph.bind(this);
@@ -26,8 +28,9 @@ class LineGrapherContainer extends React.Component {
     return (
       <div className="LineGrapherContainer">
         {
-          range(this.state.graphs).map((graph, index) =>
-            <LineGrapher key={index} data={data} />)
+          this.state.graphs.map((characters, index) => 
+            <LineGrapher key={index} data={data} characters={characters} />
+          )
         }
         <div className="add-graph">
           <button className="btn" onClick={this.handleAddGraph} >
