@@ -58,7 +58,7 @@ class SocialLineGraph extends React.Component {
           .reduce((a, b) => a + b, 0)
 
         maxBook = Math.max(book, maxBook);
-        minBook = Math.min(book, minBook);
+        minBook = Math.min(+book, minBook);
 
         return offset + point
       })
@@ -78,6 +78,8 @@ class SocialLineGraph extends React.Component {
       newData[0].line,
       linenos.slice(0, maxBook).reduce((a, b) => a + b, 0)
     ];
+    
+    console.log('minBook:', minBook)
 
     return {
       data: [{ line: minBook, count: 0 }].concat(newData),

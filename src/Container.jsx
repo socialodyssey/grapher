@@ -20,7 +20,7 @@ function filterByRange(key, a, b) {
   return o => {
     const val = o[key];
 
-    return val > a && val <= b;
+    return val >= a && val < b;
   }
 }
 
@@ -60,8 +60,8 @@ function router(location) {
 
   if(query.fromBook || query.toBook) {
     routeState.sliderValue = {
-      min: +query.fromBook || 0,
-      max: +query.toBook   || 9
+      min: +query.fromBook || 1,
+      max: +query.toBook   || 10
     }
     
     routeState.needsFiltering = true;
@@ -93,9 +93,9 @@ class Container extends React.Component {
       },
       sliderValue: {
         min: 1,
-        max: 2
+        max: 10
       },
-      sliderMax: 9,
+      sliderMax: 10,
       graphConfig: {
         'show-bridges':     true,
         'show-edge-weight': true,
@@ -139,8 +139,8 @@ class Container extends React.Component {
       filteredData: graphData,
       sliderMax: maxBook,
       sliderValue: {
-        min: 0,
-        max: maxBook
+        min: 1,
+        max: maxBook + 1
       },
       ...router(this.props.history.location)
     })
@@ -302,7 +302,7 @@ class Container extends React.Component {
           <RangeSlider
               title="Books"
               handleChange={this.handleRangeChange}
-              min={0}
+              min={1}
               max={this.state.sliderMax}
               value={sliderValue} />
 
