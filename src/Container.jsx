@@ -60,7 +60,7 @@ function router(location) {
   if(query.fromBook || query.toBook) {
     routeState.sliderValue = {
       min: +query.fromBook || 0,
-      max: +query.toBook   || 8
+      max: +query.toBook   || 9
     }
     
     routeState.needsFiltering = true;
@@ -94,7 +94,7 @@ class Container extends React.Component {
         min: 1,
         max: 2
       },
-      sliderMax: 8,
+      sliderMax: 9,
       graphConfig: {
         'show-bridges':     true,
         'show-edge-weight': true,
