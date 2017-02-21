@@ -58,24 +58,6 @@ class SocialLineGraph extends React.Component {
       })
       .sort((a, b) => a - b)
       .map((line) => ({ line, count: getCentrality(node, line).centrality.weighted }))
-      /*.map(({ line, count }) => {
-        let total_lines = 0;
-        let book        = 0;
-        
-        while(total_lines < line) {
-          total_lines += linenos[book];
-          book += 1;
-        }
-
-        const linesInBk      = linenos[book - 1];
-        const linesRemaining = Math.abs(line - total_lines);
-        const linesThrough   = linesInBk - linesRemaining;
-
-        return {
-          line: book + (linesThrough / linesInBk),
-          count
-        }
-         })*/
 
     if(!newData.length) {
       return {
@@ -103,7 +85,7 @@ class SocialLineGraph extends React.Component {
   updateData() {
     const { nodeIDs } = this.props;
 
-    const data        = nodeIDs.map(this.getLinksFor);
+    const data        = nodeIDs.map(this.getLinksFor).filter(line => line.data.length);
     const { linenos } = this.props.data;
     const maxBook     = Math.max.apply(null, data.map(x => x.maxBook));
     

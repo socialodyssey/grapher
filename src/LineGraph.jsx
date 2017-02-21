@@ -79,33 +79,36 @@ class LineGraph extends React.Component {
         .selectAll('.label')
         .remove()
 
-    const paths = lines.map((line, index) => {
-      const path = this.d3LinesContainer
-        .append('g');
+    const paths = lines
+      .map((line, index) => {
+        const pathData = graphData[index];
+        
+        const path = this.d3LinesContainer
+                         .append('g');
 
-      const color = lineColors[index % lineColors.length];
-      path
-        .append('path')
-        .attr('class', 'line')
-        .attr('stroke', color)
-        .attr('stroke-width', 2)
-        .attr('fill', 'none')
-        .attr('d', line(graphData[index]));
+        const color = lineColors[index % lineColors.length];
+        path
+          .append('path')
+          .attr('class', 'line')
+          .attr('stroke', color)
+          .attr('stroke-width', 2)
+          .attr('fill', 'none')
+          .attr('d', line(pathData));
 
-      const lastDatum = graphData[index].slice(-1)[0];
-      
-      path
-        .append('text')
-        .attr('class', 'label')
-        .attr('fill', color)
-        .attr("transform", "translate(" + x(lastDatum.line) + "," + y(lastDatum.count) + ")")
-        .attr('text-anchor', 'start')
-        .attr('stroke', 'none')
-        .attr('font-weight', 'bold')
-        .attr('opacity', '0')
-        .text(data[index].name);
+        const lastDatum = pathData.slice(-1)[0];
+        
+        path
+          .append('text')
+          .attr('class', 'label')
+          .attr('fill', color)
+          .attr("transform", "translate(" + x(lastDatum.line) + "," + y(lastDatum.count) + ")")
+          .attr('text-anchor', 'start')
+          .attr('stroke', 'none')
+          .attr('font-weight', 'bold')
+          .attr('opacity', '0')
+          .text(data[index].name);
 
-      return path;
+        return path;
     })
 
     paths.forEach((path) => {

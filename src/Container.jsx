@@ -48,8 +48,6 @@ function router(location) {
 
   const query = qs.parse(search.split('?')[1]);
 
-  console.log(query)
-  
   const splitPath = pathname.split('/');
   const routeState = {};
 
@@ -63,6 +61,8 @@ function router(location) {
     min: +query.fromBook || 0,
     max: +query.toBook   || 8
   }
+
+  routeState.needsFiltering = true;
 
   return routeState;
 }
@@ -186,12 +186,7 @@ class Container extends React.Component {
     this.fetchData();
 
     this.urlListener = history.listen((location, action) => {
-      this.setState({
-        ...router(location),
-        needsFiltering: true
-      })
-
-      console.log(router(location))
+      this.setState(router(location))
     })
   }
 
