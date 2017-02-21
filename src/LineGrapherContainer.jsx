@@ -18,7 +18,7 @@ class LineGrapherContainer extends React.Component {
 
   handleAddGraph() {
     this.setState({
-      graphs: this.state.graphs + 1
+      graphs: this.state.graphs.concat([null])
     })
   }
   
