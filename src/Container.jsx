@@ -1,5 +1,6 @@
 import React        from 'react';
 import qs           from 'qs';
+import debounce     from 'lodash.debounce';
 import Graph        from './Graph';
 import interactions from './data/interactions';
 import entities     from './data/entities';
@@ -105,10 +106,11 @@ class Container extends React.Component {
       activeTab: 'SocialGraph'
     }, router(props.history.location))
 
-    this.fetchData = this.fetchData.bind(this);
-    this.handleRangeChange = this.handleRangeChange.bind(this);
+    this.fetchData               = this.fetchData.bind(this);
+    this.flagToFilter            = debounce(this.flagToFilter.bind(this), 400);
+    this.handleRangeChange       = this.handleRangeChange.bind(this);
     this.handleGraphConfigChange = this.handleGraphConfigChange.bind(this);
-    this.handleChangeTab = this.handleChangeTab.bind(this);
+    this.handleChangeTab         = this.handleChangeTab.bind(this);
   }
 
   // MILO: This used to be async, hence the overwrought design
@@ -144,11 +146,19 @@ class Container extends React.Component {
     })
   }
 
+  // This is debounced above
+  flagToFilter() {
+    this.setState({
+      needsFiltering: true
+    });
+  }
+
   handleRangeChange(newValue) {
     this.setState({
-      sliderValue: newValue,
-      needsFiltering: true
+      sliderValue: newValue
     })
+
+    this.flagToFilter();
   }
 
   handleGraphConfigChange(e) {
@@ -177,9 +187,12 @@ class Container extends React.Component {
                             keyChanged('show-inr', oldConfig, newConfig));
     
     this.setState({
-      graphConfig: newConfig,
-      needsFiltering
+      graphConfig: newConfig
     })
+
+    if(needsFiltering) {
+      this.flagToFilter();
+    }
   }
 
   handleChangeTab(tabKey) {
