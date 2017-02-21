@@ -73,14 +73,12 @@ class SocialLineGraph extends React.Component {
     }
 
     const xDomain = [
-      //minBook,
-      //maxBook
       newData[0].line,
       linenos.slice(0, maxBook).reduce((a, b) => a + b, 0)
     ];
-    
+
     return {
-      data: [{ line: linenos[minBook - 1], count: 0 }].concat(newData),
+      data: [{ line: newData[0].line, count: 0 }].concat(newData),
       name: node.name,
       maxBook,
       minBook,
@@ -93,10 +91,14 @@ class SocialLineGraph extends React.Component {
 
     const data        = nodeIDs.map(this.getLinksFor).filter(line => line.data.length);
     const { linenos } = this.props.data;
+    const minBook     = Math.min.apply(null, data.map(x => x.minBook));
     const maxBook     = Math.max.apply(null, data.map(x => x.maxBook));
+
+    console.log('min', minBook);
+    console.log('max', maxBook);
     
     const lineMarkings = linenos
-      .slice(0, maxBook)
+      .slice(0, maxBook + 1)
       .map((lineCount, index, arr) => {
         const offset = arr.slice(0, index).reduce((a, b) => a + b, 0);
         
