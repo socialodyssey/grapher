@@ -24,6 +24,12 @@ function filterByRange(key, a, b) {
   }
 }
 
+function filterNodesBy(links) {
+  return node => links.some((link) => {
+    return link.target === node._id || link.source === node._id;
+  })
+}
+
 function keyChanged(key, o1, o2) {
   return o1[key] !== o2[key];
 }
@@ -242,7 +248,9 @@ class Container extends React.Component {
       // How is d3 modifying the links even when I clone the array?
                                 .map(({ source, target, ...rest }) => ({ ...rest, source: source.id || source, target: target.id || target }))
 
-      const newNodes = graphData.nodes.map(mapCentralityFor(newLinks))
+      const newNodes = graphData.nodes
+                                .filter(filterNodesBy(newLinks))
+                                .map(mapCentralityFor(newLinks))
 
       const filteredData = Object.assign(
         {},
