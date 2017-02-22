@@ -107,7 +107,8 @@ class Container extends React.Component {
         'show-edge-weight': true,
         'show-direction':   false,
         'show-cog':         true,
-        'show-inr':         true
+        'show-inr':         true,
+        'pause-simulation': false
       },
       activeTab: 'SocialGraph'
     }, router(props.history.location))
@@ -297,6 +298,7 @@ class Container extends React.Component {
               showBridges={graphConfig['show-bridges']}
               showEdgeWeight={graphConfig['show-edge-weight']}
               showDirection={graphConfig['show-direction']}
+              pauseSimulation={graphConfig['pause-simulation']}
               data-tabkey="graph"
           />
           <LineGrapherContainer
@@ -305,6 +307,7 @@ class Container extends React.Component {
               defaultGraphs={defaultLineGraphs}
           />
         </Switcher>
+
 
         <div className="control-panel">
           <RangeSlider

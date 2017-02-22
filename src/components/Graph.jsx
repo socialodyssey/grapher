@@ -44,13 +44,14 @@ class Graph extends React.Component {
     this.bridgeHash = {};
     this.linksHash = {};
 
-    this.isBridge = this.isBridge.bind(this);
-    this.areConnected = this.areConnected.bind(this);
-    this.setLinkStyle = this.setLinkStyle.bind(this);
-    this.getNodeHighlighter = this.getNodeHighlighter.bind(this);
+    this.isBridge             = this.isBridge.bind(this);
+    this.areConnected         = this.areConnected.bind(this);
+    this.setLinkStyle         = this.setLinkStyle.bind(this);
+    this.getNodeHighlighter   = this.getNodeHighlighter.bind(this);
     this.getNodeUnhighlighter = this.getNodeUnhighlighter.bind(this);
-    this.updateDisplay = this.updateDisplay.bind(this);
-    this.updateHashes = this.updateHashes.bind(this);
+    this.updateDisplay        = this.updateDisplay.bind(this);
+    this.updateHashes         = this.updateHashes.bind(this);
+    this.handleExport         = this.handleExport.bind(this);
   }
 
   isBridge(link) {
@@ -75,7 +76,7 @@ class Graph extends React.Component {
         0,
         d3.max(links, (d) => isWeightedEdge(d) ? d.selection.text.length : 1)
       ])
-      .range([1, 40])
+      .range([1, 30])
     
     link
       .style('stroke', (d) => {
@@ -191,8 +192,6 @@ class Graph extends React.Component {
       }, 0),
       links:      tmpLinkHash[key]
     }))
-
-    console.log(mergedLinks)
 
     const container = this.d3Container;
 
@@ -387,7 +386,7 @@ class Graph extends React.Component {
                           .force('link', d3.forceLink().id((d) => d.id))
                           .force('charge', d3.forceManyBody().strength(-3000))
                           .force('center', d3.forceCenter(width / 2, height / 2))
-                          .velocityDecay(0.9)
+                          .velocityDecay(0.8)
 
     this.d3Drag = d3.drag()
                     .on('start', (d) => {
@@ -408,6 +407,27 @@ class Graph extends React.Component {
                     })
     
     this.updateDisplay();
+  }
+
+  handleExport(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const svg        = this.refs['svg'];
+    const serializer = new XMLSerializer();
+    let source       = serializer.serializeToString(svg);
+    
+    if(!source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)){
+      source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+    }
+    
+    if(!source.match(/^<svg[^>]+"http\:\/\/www\.w3\.org\/1999\/xlink"/)){
+      source = source.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
+    }
+    source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+
+    var url = "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(source);
+    window.location = url;
   }
 
   updateHashes(prevProps) {
@@ -435,6 +455,8 @@ class Graph extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
+    const { pauseSimulation } = this.props;
+    
     this.updateHashes(prevProps);
 
     this.setLinkStyle(
@@ -442,6 +464,15 @@ class Graph extends React.Component {
         .select('.links')
         .selectAll('line')
     )
+
+    if(pauseSimulation !== prevProps.pauseSimulation) {
+      if(pauseSimulation) {
+        this.d3Simulation.velocityDecay(1);
+      }
+      else {
+        this.d3Simulation.velocityDecay(0.8);
+      }
+    }
 
     if(prevProps.data === this.props.data) {
       return;
@@ -452,7 +483,10 @@ class Graph extends React.Component {
 
   render() {
     return (
-      <svg className="Graph" ref="svg" width={this.props.width} height={this.props.height} />
+      <div>
+        <button className="btn" onClick={this.handleExport}>Export</button>
+        <svg className="Graph" id="foobarzee"ref="svg" width={this.props.width} height={this.props.height} />
+      </div>
     )
   }
 }

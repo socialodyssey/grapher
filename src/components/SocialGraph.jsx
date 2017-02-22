@@ -10,7 +10,7 @@ class SocialGraph extends React.Component {
 
     this.state = {
       width: document.body.clientWidth,
-      height: window.innerHeight * 0.66
+      height: window.innerHeight * 0.80
     }
 
     this.handleResize = this.handleResize.bind(this);
@@ -19,7 +19,7 @@ class SocialGraph extends React.Component {
   handleResize() {
     this.setState({
       width: document.body.clientWidth,
-      height: window.innerHeight * 0.66
+      height: window.innerHeight * 0.80
     })
   }
   
