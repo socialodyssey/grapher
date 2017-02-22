@@ -137,7 +137,7 @@ class Container extends React.Component {
     this.setState({
       graphData,
       filteredData: graphData,
-      sliderMax: maxBook,
+      sliderMax: maxBook + 1,
       sliderValue: {
         min: 1,
         max: maxBook + 1
