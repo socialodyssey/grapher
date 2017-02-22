@@ -1,0 +1,7 @@
+.Graph text {
+    pointer-events: none;
+}
+
+.Graph circle {
+    cursor: pointer;
+}

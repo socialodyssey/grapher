@@ -2,6 +2,7 @@ import React from 'react';
 import range from 'lodash.range';
 
 import LineGrapher from './LineGrapher';
+import '../style/LineGrapherContainer.css';
 
 class LineGrapherContainer extends React.Component {
   constructor(props) {

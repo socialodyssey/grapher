@@ -1,5 +1,6 @@
 import React from 'react'
 import * as d3 from 'd3';
+import '../style/Graph.css';
 
 const colors = {
   circleFill:      '#5BC0EB',

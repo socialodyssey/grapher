@@ -1,0 +1,16 @@
+.Checkbox {
+    margin-bottom: 0.5em;
+    text-align: right;
+}
+
+.Checkbox label {
+    font-weight: bold;
+    margin-right: 1em;
+    float: left;
+}
+
+.Checkbox input {
+    vertical-align: middle;
+    width: 1em;
+    height: 1em;
+}

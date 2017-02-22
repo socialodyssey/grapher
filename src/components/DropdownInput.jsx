@@ -1,4 +1,5 @@
 import React from 'react'
+import '../style/DropdownInput.css'
 
 export default function DropdownInput({ name, displayName, choices, currentVal, handleChange, onRemove }) {
   return (

@@ -1,7 +1,9 @@
 import React from 'react';
 
-import { createCentralityGetter } from './lib/graphUtils';
+import { createCentralityGetter } from '../lib/graphUtils';
 import LineGraph                  from './LineGraph';
+
+import '../style/SocialLineGraph.css';
 
 class SocialLineGraph extends React.Component {
   constructor(props) {

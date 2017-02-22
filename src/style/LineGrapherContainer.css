@@ -1,0 +1,10 @@
+.LineGrapherContainer {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.LineGrapherContainer .add-graph {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

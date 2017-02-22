@@ -1,7 +1,8 @@
 import React from 'react';
 import Graph from './Graph';
-import interactions from './data/interactions';
-import entities from './data/entities';
+import interactions from '../data/interactions';
+import entities from '../data/entities';
+import '../style/SocialGraph.css';
 
 class SocialGraph extends React.Component {
   constructor(props) {

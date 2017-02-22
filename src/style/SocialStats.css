@@ -1,0 +1,30 @@
+.SocialStats {
+    margin: 1em;
+    text-align: left;
+    border: 2px solid black;
+}
+
+.SocialStats th {
+    text-transform: uppercase;
+    padding: 1em;
+    border-right: 3px dotted #d8d8d8;
+    cursor: pointer;
+}
+
+.SocialStats th:last-child {
+    border-right: none;
+}
+
+.SocialStats th:hover {
+    color: #515151;
+}
+
+.SocialStats td {
+    text-transform: capitalize;
+    border-right: 3px dotted #d8d8d8;
+    padding-left: 1em;
+}
+
+.SocialStats td:last-child {
+    border-right: none;
+}

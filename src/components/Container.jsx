@@ -2,12 +2,12 @@ import React        from 'react';
 import qs           from 'qs';
 import debounce     from 'lodash.debounce';
 import Graph        from './Graph';
-import interactions from './data/interactions';
-import entities     from './data/entities';
-import bridges      from './data/bridges';
-import linenos      from './data/linenos';
+import interactions from '../data/interactions';
+import entities     from '../data/entities';
+import bridges      from '../data/bridges';
+import linenos      from '../data/linenos';
 
-import { mapCentralityFor } from './lib/graphUtils';
+import { mapCentralityFor } from '../lib/graphUtils';
 import Switcher             from './Switcher';
 import Tabs                 from './Tabs';
 import SocialGraph          from './SocialGraph';

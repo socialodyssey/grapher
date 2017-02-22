@@ -1,0 +1,9 @@
+.RangeSlider {
+    flex-grow: 1;
+    height: 6em;
+    margin: 1em;
+    padding: 2em;
+    padding-top: 0;
+    border: 2px solid black;
+    max-width: 50em;
+}

@@ -1,5 +1,6 @@
 import React from 'react';
 import Checkbox from './Checkbox';
+import '../style/GraphConfig.css';
 
 function GraphConfig({ handleChange, current }) {
   return (

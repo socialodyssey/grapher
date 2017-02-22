@@ -1,7 +1,8 @@
 import React from 'react';
-import InputRange from '../node_modules/react-input-range';
+import InputRange from 'react-input-range';
 
 import 'react-input-range/lib/css/index.css';
+import '../style/RangeSlider.css';
 
 function RangeSlider ({ title, value, handleChange, min, max }) {
   return (

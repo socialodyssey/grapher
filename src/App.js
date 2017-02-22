@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import 'normalize.css/normalize.css';
-import './App.css';
+import './style/App.css';
 
-import Container from './Container';
+import Container from './components/Container';
 
 class App extends Component {
   render() {

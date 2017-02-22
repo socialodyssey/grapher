@@ -2,7 +2,7 @@ import React         from 'react';
 import ReactDOM      from 'react-dom';
 import App           from './App';
 import createHistory from 'history/createHashHistory';
-import './index.css';
+import './style/index.css';
 
 const history = createHistory({ queryKey: false });
 

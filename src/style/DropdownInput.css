@@ -1,0 +1,17 @@
+.DropdownInput {
+    display: flex;
+}
+
+.DropdownInput .remove {
+    display: inline-block;
+    margin: 0.5em 1em;
+    margin-right: 0;
+    font-weight: bold;
+    color: #C3423F;
+    cursor: pointer;
+}
+
+.DropdownInput .select {
+    margin: 0;
+    margin-bottom: 1em;
+}

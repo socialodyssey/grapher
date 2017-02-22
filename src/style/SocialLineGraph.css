@@ -1,0 +1,13 @@
+.SocialLineGraph .graph-title {
+    display: inline-block;
+}
+
+.SocialLineGraph .close-btn {
+    display: inline-block;
+    cursor: pointer;
+    margin-left: 1em;
+}
+
+.SocialLineGraph .close-btn:hover {
+    color: #515151;
+}
