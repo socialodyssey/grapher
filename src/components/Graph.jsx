@@ -29,7 +29,11 @@ function lineEndPointY (d, radius) {
 }
 
 function isWeightedEdge(edge) {
-  return edge.type === 'INR.VERBAL-NEAR';
+  if(edge.type) {
+    return edge.type === 'INR.VERBAL-NEAR';
+  }
+
+  return edge.links.some((link) => link.type === 'INR.VERBAL-NEAR')
 }
 
 class Graph extends React.Component {
@@ -92,10 +96,10 @@ class Graph extends React.Component {
         }
 
         if(showBridges && this.isBridge(d)) {
-          return showEdgeWeight && isWeightedEdge(d) ? weightScale(d.selection.text.length) : 4
+          return showEdgeWeight && isWeightedEdge(d) ? weightScale(d.weight) : 4
         }
 
-        return showEdgeWeight && isWeightedEdge(d) ? weightScale(d.selection.text.length) : 1
+        return showEdgeWeight && isWeightedEdge(d) ? weightScale(d.weight) : 1
       })
     
     link
@@ -161,6 +165,34 @@ class Graph extends React.Component {
   updateDisplay() {
     const { data, showDirection }   = this.props;
     const { nodes, links, bridges } = data;
+
+    const tmpLinkHash = {};
+    
+    links.forEach((link) => {
+      const key = link.source + '-' + link.target;
+
+      if(!tmpLinkHash[key]) {
+        tmpLinkHash[key] = [];
+      }
+
+      tmpLinkHash[key].push(link)
+    })
+
+    const mergedLinks = Object.keys(tmpLinkHash).map((key) => ({
+      id:     key,
+      source: key.split('-')[0],
+      target: key.split('-')[1],
+      weight: tmpLinkHash[key].reduce((acc, link) => {
+        if(isWeightedEdge(link)) {
+          return acc + link.selection.text.length;
+        }
+        
+        return acc + 1;
+      }, 0),
+      links:      tmpLinkHash[key]
+    }))
+
+    console.log(mergedLinks)
 
     const container = this.d3Container;
 
@@ -228,7 +260,7 @@ class Graph extends React.Component {
       .selectAll('line')
 
     link = link
-      .data(links, l => l.id)
+      .data(mergedLinks, l => l.id)
 
     link
       .exit()
@@ -240,7 +272,7 @@ class Graph extends React.Component {
       .merge(link);
 
     link.on('mouseover', (d) => {
-      console.log(d.type)
+      console.log(d.links.map(l => l.type).join(', '))
     })
 
     this.setLinkStyle(link)
@@ -260,8 +292,7 @@ class Graph extends React.Component {
               return d.target.x;
             }
 
-            const targetCentrality = d.target.centrality.in + d.target.centrality.out;
-            const radius = scaleCentrality.range(radiusRange)(targetCentrality);
+            const radius = scaleCentrality.range(radiusRange)(d.target.centrality.weighted);
 
             const x2 = lineEndPointX(d, radius)
 
@@ -272,8 +303,7 @@ class Graph extends React.Component {
               return d.target.y;
             }
             
-            const targetCentrality = d.target.centrality.in + d.target.centrality.out;
-            const radius = scaleCentrality.range(radiusRange)(targetCentrality);
+            const radius = scaleCentrality.range(radiusRange)(d.target.centrality.weighted);
 
             const y2 = lineEndPointY(d, radius)
 
@@ -286,9 +316,7 @@ class Graph extends React.Component {
         
         label 
           .attr("dx", d => {
-            const centrality = d.centrality.in + d.centrality.out;
-
-            return d.x + scaleCentrality.range(radiusRange)(centrality) + 4;
+            return d.x + scaleCentrality.range(radiusRange)(d.centrality.weighted) + 4;
           })
           .attr("dy", d => {
             return d.y + 6
@@ -297,7 +325,7 @@ class Graph extends React.Component {
 
     this.d3Simulation
         .force('link')
-        .links(links);
+        .links(mergedLinks);
     
     this.d3Simulation.alpha(1).restart();
   }
@@ -320,8 +348,8 @@ class Graph extends React.Component {
         .attr('viewBox', '0 0 10 10')
         .attr('refX', 10)
         .attr('refY', 5)
-        .attr('markerWidth', 10)
-        .attr('markerHeight', 5)
+        .attr('markerWidth', 6)
+        .attr('markerHeight', 3)
         .attr('orient', 'auto')
         .append('svg:path')
         .attr("d", "M 0 0 L 10 5 L 0 10 z")
@@ -359,7 +387,7 @@ class Graph extends React.Component {
                           .force('link', d3.forceLink().id((d) => d.id))
                           .force('charge', d3.forceManyBody().strength(-3000))
                           .force('center', d3.forceCenter(width / 2, height / 2))
-                          .velocityDecay(0.8)
+                          .velocityDecay(0.9)
 
     this.d3Drag = d3.drag()
                     .on('start', (d) => {
