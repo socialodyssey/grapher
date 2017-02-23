@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { sortAlphabetize, mapSelect } from '../lib/arrayUtils';
 import { createCentralityGetter } from '../lib/graphUtils';
 import LineGraph                  from './LineGraph';
 
@@ -115,10 +116,15 @@ class SocialLineGraph extends React.Component {
     const { width, height, onClose } = this.props;
     const { name, data, lineMarkings } = this.state;
 
+    const title = data
+      .sort(sortAlphabetize('name'))
+      .map(mapSelect('name'))
+      .join(', ');
+
     return (
       <div className="SocialLineGraph">
         <div className="graph-info">
-          <h2 className="graph-title">{data.map((d, index) => index === (data.length - 1) ? d.name : d.name + ', ')}</h2>
+          <h2 className="graph-title">{title}</h2>
           <div className="close-btn" onClick={onClose}>(Change)</div>
         </div>
         <LineGraph

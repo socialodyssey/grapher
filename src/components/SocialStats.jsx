@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { sortAlphabetize } from '../lib/arrayUtils';
+
 import '../style/SocialStats.css';
 
 class SocialStats extends React.Component {
@@ -64,7 +66,7 @@ class SocialStats extends React.Component {
             this.props.data.nodes
                 .sort((a, b) => {
                   if(a.centrality[sortBy] === b.centrality[sortBy]) {
-                    return b.name < a.name ? 1 : -1;
+                    return sortAlphabetize('name')(a, b);
                   }
 
                   return b.centrality[sortBy] - a.centrality[sortBy];

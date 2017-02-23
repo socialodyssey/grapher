@@ -1,5 +1,6 @@
 .SocialLineGraph .graph-title {
     display: inline-block;
+    margin-left: 50px; /* This is the graph margin */
 }
 
 .SocialLineGraph .close-btn {

@@ -75,7 +75,7 @@ class LineGraph extends React.Component {
         .selectAll('.line')
         .remove()
     
-    this.d3LinesContainer
+    this.d3LabelsContainer
         .selectAll('.label')
         .remove()
 
@@ -96,8 +96,8 @@ class LineGraph extends React.Component {
           .attr('d', line(pathData));
 
         const lastDatum = pathData.slice(-1)[0];
-        
-        path
+
+        this.d3LabelsContainer
           .append('text')
           .attr('class', 'label')
           .attr('fill', color)
@@ -106,7 +106,11 @@ class LineGraph extends React.Component {
           .attr('stroke', 'none')
           .attr('font-weight', 'bold')
           .attr('opacity', '0')
-          .text(data[index].name);
+          .text(data[index].name)
+          .transition()
+          .duration(2000)
+          .attr('opacity', '1')
+        
 
         return path;
     })
@@ -121,12 +125,6 @@ class LineGraph extends React.Component {
         .transition()
         .duration(1000)
         .attr('stroke-dashoffset', 0);
-
-      path
-        .select('text')
-        .transition()
-        .duration(1400)
-        .attr('opacity', '1')
     })
 
     function getLineAt(mouseX) {
@@ -183,7 +181,8 @@ class LineGraph extends React.Component {
       .append('g')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-    this.d3LinesContainer = this.d3Container.append('g')
+    this.d3LinesContainer  = this.d3Container.append('g');
+    this.d3LabelsContainer = this.d3Container.append('g'); 
     
     this.d3BottomAxis = this.d3Container
         .append('g')

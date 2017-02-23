@@ -124,8 +124,8 @@ class LineGrapher extends React.Component {
     return (
       <SocialLineGraph
           onClose={this.handleGraphClose}
-          width={600}
-          height={400}
+          width={800}
+          height={800}
           data={data}
           nodeIDs={characters}
       />
