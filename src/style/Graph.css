@@ -5,3 +5,8 @@
 .Graph circle {
     cursor: pointer;
 }
+
+.export-btn {
+    position: absolute;
+    left: 1em;
+}

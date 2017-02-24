@@ -308,7 +308,6 @@ class Container extends React.Component {
           />
         </Switcher>
 
-
         <div className="control-panel">
           <RangeSlider
               title="Books"

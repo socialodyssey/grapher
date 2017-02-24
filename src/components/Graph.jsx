@@ -473,8 +473,8 @@ class Graph extends React.Component {
   render() {
     return (
       <div>
-        <button className="btn" onClick={this.handleExport}>Export</button>
         <svg className="Graph" id="foobarzee"ref="svg" width={this.props.width} height={this.props.height} />
+        <button className="btn export-btn" onClick={this.handleExport}>Export</button>
       </div>
     )
   }

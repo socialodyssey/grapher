@@ -57,12 +57,12 @@ export function mapCentralityFor(interactions) {
       .filter((link) =>
         (
           ((link.source.id || link.source) === entity.id)))
-    
+
     const ins = interactions
       .filter((link) =>
         (
           ((link.target.id || link.target) === entity.id)))
-
+    
     const alpha = 0.5;
     
     const outWeight = getTotalWeight(outs);
