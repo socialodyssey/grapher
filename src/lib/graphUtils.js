@@ -8,27 +8,30 @@ function get1DLine(book, line) {
   return offset + line;
 }
 
-function getWeight(arr) {
+export function getWeight(interaction) {
+  if(interaction.type === 'INR.VERBAL-NEAR' || interaction.type === 'INR.VERBAL-FAR') {
+    return interaction.selection.text.length / 20;
+  }
+
+  if(interaction.type.lastIndexOf('INR') !== -1) {
+    return 20;
+  }
+
+  if(interaction.type === 'COG.FAR') {
+    return 10;
+  }
+
+  if(interaction.type === 'COG.NEAR' || interaction.type === 'PCR') {
+    return 1;
+  }
+
+  return 1;
+  
+}
+
+function getTotalWeight(arr) {
   return arr
-    .map(i => {
-      if(i.type === 'INR.VERBAL-NEAR' || i.type === 'INR.VERBAL-FAR') {
-        return i.selection.text.length / 20;
-      }
-
-      if(i.type.lastIndexOf('INR') !== -1) {
-        return 20;
-      }
-
-      if(i.type === 'COG.FAR') {
-        return 10;
-      }
-
-      if(i.type === 'COG.NEAR' || i.type === 'PCR') {
-        return 1;
-      }
-
-      return 1;
-    })
+    .map(getWeight)
     .reduce((a, b) => a + b, 0);
 }
 
@@ -62,8 +65,8 @@ export function mapCentralityFor(interactions) {
 
     const alpha = 0.5;
     
-    const outWeight = getWeight(outs);
-    const inWeight = getWeight(ins);
+    const outWeight = getTotalWeight(outs);
+    const inWeight = getTotalWeight(ins);
 
     const outCent = outs.length;
     const inCent  = ins.length;

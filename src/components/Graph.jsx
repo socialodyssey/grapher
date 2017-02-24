@@ -1,5 +1,7 @@
-import React from 'react'
-import * as d3 from 'd3';
+import React         from 'react'
+import * as d3       from 'd3';
+import { getWeight } from '../lib/graphUtils';
+
 import '../style/Graph.css';
 
 const colors = {
@@ -26,14 +28,6 @@ function lineEndPointY (d, radius) {
   const offset = (d.target.y - d.source.y) - (d.target.y - d.source.y) * scale;
   
   return d.target.y - offset;
-}
-
-function isWeightedEdge(edge) {
-  if(edge.type) {
-    return edge.type === 'INR.VERBAL-NEAR';
-  }
-
-  return edge.links.some((link) => link.type === 'INR.VERBAL-NEAR')
 }
 
 class Graph extends React.Component {
@@ -66,7 +60,6 @@ class Graph extends React.Component {
   }
     
   setLinkStyle(link, opts={}) {
-    const { links } = this.props.data;
     const { hlFrom } = opts;
     const { showBridges, showEdgeWeight, showDirection } = this.props;
     
@@ -74,7 +67,7 @@ class Graph extends React.Component {
       .scaleLinear()
       .domain([
         0,
-        d3.max(links, (d) => isWeightedEdge(d) ? d.selection.text.length : 1)
+        d3.max(this.mergedLinks, (d) => d.weight)
       ])
       .range([1, 30])
     
@@ -97,10 +90,10 @@ class Graph extends React.Component {
         }
 
         if(showBridges && this.isBridge(d)) {
-          return showEdgeWeight && isWeightedEdge(d) ? weightScale(d.weight) : 4
+          return showEdgeWeight && weightScale(d.weight);
         }
 
-        return showEdgeWeight && isWeightedEdge(d) ? weightScale(d.weight) : 1
+        return showEdgeWeight && weightScale(d.weight);
       })
     
     link
@@ -179,16 +172,12 @@ class Graph extends React.Component {
       tmpLinkHash[key].push(link)
     })
 
-    const mergedLinks = Object.keys(tmpLinkHash).map((key) => ({
+    this.mergedLinks = Object.keys(tmpLinkHash).map((key) => ({
       id:     key,
       source: key.split('-')[0],
       target: key.split('-')[1],
       weight: tmpLinkHash[key].reduce((acc, link) => {
-        if(isWeightedEdge(link)) {
-          return acc + link.selection.text.length;
-        }
-        
-        return acc + 1;
+        return acc + getWeight(link);
       }, 0),
       links:      tmpLinkHash[key]
     }))
@@ -259,7 +248,7 @@ class Graph extends React.Component {
       .selectAll('line')
 
     link = link
-      .data(mergedLinks, l => l.id)
+      .data(this.mergedLinks, l => l.id)
 
     link
       .exit()
@@ -324,7 +313,7 @@ class Graph extends React.Component {
 
     this.d3Simulation
         .force('link')
-        .links(mergedLinks);
+        .links(this.mergedLinks);
     
     this.d3Simulation.alpha(1).restart();
   }
