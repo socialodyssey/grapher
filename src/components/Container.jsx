@@ -231,7 +231,7 @@ class Container extends React.Component {
                                   const { type } = interaction;
                                   
                                   if(graphConfig['show-cog'] &&
-                                     (type.lastIndexOf('COG') !== -1 || type === 'PCR')) {
+                                     (type.lastIndexOf('COG') !== -1)) {
                                     
                                     return true;
                                   }

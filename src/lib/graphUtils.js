@@ -21,7 +21,7 @@ export function getWeight(interaction) {
     return 10;
   }
 
-  if(interaction.type === 'COG.NEAR' || interaction.type === 'PCR') {
+  if(interaction.type === 'COG.NEAR' || interaction.type === 'COG.PCR') {
     return 1;
   }
 
