@@ -30,6 +30,20 @@ function filterNodesBy(links) {
   })
 }
 
+function filterLinksBy(nodes) {
+  return link => {
+    const targetIncluded = nodes.some((node) => {
+      return link.target === node._id
+    })
+    
+    const sourceIncluded = nodes.some((node) => {
+      return link.source === node._id
+    })
+
+    return sourceIncluded && targetIncluded;
+  }
+}
+
 function keyChanged(key, o1, o2) {
   return o1[key] !== o2[key];
 }
@@ -108,7 +122,8 @@ class Container extends React.Component {
         'show-direction':   false,
         'show-cog':         true,
         'show-inr':         true,
-        'pause-simulation': false
+        'pause-simulation': false,
+        'loweset-weight':   0
       },
       activeTab: 'SocialGraph'
     }, router(props.history.location))
@@ -229,7 +244,7 @@ class Container extends React.Component {
                                 .filter(filterByRange('book', sliderValue.min, sliderValue.max))
                                 .filter((interaction) => {
                                   const { type } = interaction;
-                                  
+
                                   if(graphConfig['show-cog'] &&
                                      (type.lastIndexOf('COG') !== -1)) {
                                     
@@ -247,18 +262,19 @@ class Container extends React.Component {
 
       // TODO: Figure out why this map is necessary.
       // How is d3 modifying the links even when I clone the array?
-                                .map(({ source, target, ...rest }) => ({ ...rest, source: source.id || source, target: target.id || target }))
+                                .map(({ source, target, ...rest }) => ({ ...rest, source: source.id || source, target: target.id || target }));
 
       const newNodes = graphData.nodes
                                 .filter(filterNodesBy(newLinks))
                                 .map(mapCentralityFor(newLinks))
+                                .filter((node) => node.centrality.weighted > graphConfig['loweset-weight']);
 
       const filteredData = Object.assign(
         {},
         graphData,
         {
           nodes: newNodes,
-          links: newLinks
+          links: newLinks.filter(filterLinksBy(newNodes))
         }
       )
 
