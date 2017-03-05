@@ -33,6 +33,9 @@ class SocialStats extends React.Component {
       case 'In-weight':
         key = 'inWeighted'
         break;
+      case 'Total':
+        key = 'total'
+        break;
       case 'Weighted total':
         key = 'weighted'
         break;

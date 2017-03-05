@@ -81,8 +81,9 @@ export function mapCentralityFor(interactions) {
     return {
       ...entity,
       centrality: {
-        out: outCent,
-        in:  inCent,
+        out:         outCent,
+        in:          inCent,
+        total:       outCent + inCent,
         outWeighted: Math.round(outWeighted),
         inWeighted:  Math.round(inWeighted),
         weighted:    Math.round(totalWeight)
