@@ -43,6 +43,7 @@ class Graph extends React.Component {
     this.setLinkStyle         = this.setLinkStyle.bind(this);
     this.getNodeHighlighter   = this.getNodeHighlighter.bind(this);
     this.getNodeUnhighlighter = this.getNodeUnhighlighter.bind(this);
+    this.getHandleTick        = this.getHandleTick.bind(this);
     this.updateDisplay        = this.updateDisplay.bind(this);
     this.updateHashes         = this.updateHashes.bind(this);
     this.handleExport         = this.handleExport.bind(this);
@@ -62,7 +63,7 @@ class Graph extends React.Component {
   setLinkStyle(link, opts={}) {
     const { hlFrom } = opts;
     const { showBridges, showEdgeWeight, showDirection } = this.props;
-    
+
     const weightScale = d3
       .scaleLinear()
       .domain([
@@ -85,15 +86,16 @@ class Graph extends React.Component {
         return colors.line
       })
       .style('stroke-width', (d) => {
+        // Not really sure why this is here?
         if(hlFrom && hlFrom.id === d.id && this.areConnected(hlFrom, d)) {
           return 4;
         }
 
         if(showBridges && this.isBridge(d)) {
-          return showEdgeWeight && weightScale(d.weight);
+          return showEdgeWeight ? weightScale(d.weight) : 1;
         }
 
-        return showEdgeWeight && weightScale(d.weight);
+        return showEdgeWeight   ? weightScale(d.weight) : 1;
       })
     
     link
@@ -153,6 +155,48 @@ class Graph extends React.Component {
         .style('font-size', '16px')
       
       this.setLinkStyle(link)
+    }
+  }
+
+  getHandleTick(link, node, label, scaleCentrality) {
+    return () => {
+      link
+        .attr("x1", d => d.source.x)
+        .attr("y1", d => d.source.y)
+        .attr("x2", d => {
+          if(!this.props.showDirection) {
+            return d.target.x;
+          }
+
+          const radius = scaleCentrality(d.target.centrality.weighted);
+
+          const x2 = lineEndPointX(d, radius)
+
+          return x2;
+        })
+        .attr("y2", d => {
+          if(!this.props.showDirection) {
+            return d.target.y;
+          }
+          
+          const radius = scaleCentrality(d.target.centrality.weighted);
+
+          const y2 = lineEndPointY(d, radius)
+
+          return y2
+        });
+
+      node
+        .attr("cx", d => d.x)
+        .attr("cy", d => d.y);
+      
+      label 
+        .attr("dx", d => {
+          return d.x + scaleCentrality(d.centrality.weighted) + 4;
+        })
+        .attr("dy", d => {
+          return d.y + 6
+        });
     }
   }
 
@@ -306,45 +350,7 @@ class Graph extends React.Component {
 
     this.d3Simulation
       .nodes(nodes)
-      .on('tick', () => {
-        link
-          .attr("x1", d => d.source.x)
-          .attr("y1", d => d.source.y)
-          .attr("x2", d => {
-            if(!this.props.showDirection) {
-              return d.target.x;
-            }
-
-            const radius = scaleCentrality.range(radiusRange)(d.target.centrality.weighted);
-
-            const x2 = lineEndPointX(d, radius)
-
-            return x2;
-          })
-          .attr("y2", d => {
-            if(!this.props.showDirection) {
-              return d.target.y;
-            }
-            
-            const radius = scaleCentrality.range(radiusRange)(d.target.centrality.weighted);
-
-            const y2 = lineEndPointY(d, radius)
-
-            return y2
-          });
-
-        node
-          .attr("cx", d => d.x)
-          .attr("cy", d => d.y);
-        
-        label 
-          .attr("dx", d => {
-            return d.x + scaleCentrality.range(radiusRange)(d.centrality.weighted) + 4;
-          })
-          .attr("dy", d => {
-            return d.y + 6
-          });
-      });
+      .on('tick', this.getHandleTick(link, node, label, scaleCentrality.range(radiusRange)));
 
     this.d3Simulation
         .force('link')
@@ -499,6 +505,7 @@ class Graph extends React.Component {
     }
 
     if(prevProps.data === this.props.data) {
+      this.d3Simulation.restart();
       return;
     }
 
