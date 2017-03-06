@@ -163,24 +163,59 @@ class Graph extends React.Component {
     const tmpLinkHash = {};
     
     links.forEach((link) => {
-      const key = link.source + '-' + link.target;
+      let key        = link.source + '-' + link.target;
+      let reverseKey = link.target + '-' + link.source;
 
-      if(!tmpLinkHash[key]) {
+      if (tmpLinkHash[reverseKey]) {
+        key = reverseKey;
+      }
+      else if(!tmpLinkHash[key]) {
         tmpLinkHash[key] = [];
       }
 
       tmpLinkHash[key].push(link)
     })
 
-    this.mergedLinks = Object.keys(tmpLinkHash).map((key) => ({
-      id:     key,
-      source: key.split('-')[0],
-      target: key.split('-')[1],
-      weight: tmpLinkHash[key].reduce((acc, link) => {
-        return acc + getWeight(link);
-      }, 0),
-      links:      tmpLinkHash[key]
-    }))
+    this.mergedLinks = Object.keys(tmpLinkHash).map((key) => {
+      const links  = tmpLinkHash[key];
+
+      const out = tmpLinkHash[key]
+        .filter((link) =>
+          (link.source + '-' + link.target) === key);
+      
+      const iin = tmpLinkHash[key]
+        .filter((link) =>
+          (link.source + '-' + link.target) !== key);
+      
+      const outWeight = out
+        .reduce((acc, link) => (acc + getWeight(link)), 0);
+      
+      const inWeight = iin
+        .reduce((acc, link) => (acc + getWeight(link)), 0);
+
+      const weight = outWeight + inWeight;
+
+      // In/out are relative to the first link we found above
+      // Now we want to sort out the direction we draw
+      const relSource = key.split('-')[0];
+      const relTarget = key.split('-')[1];
+      const source    = outWeight > inWeight ?
+                            relSource : relTarget;
+      const target    = outWeight > inWeight ?
+                            relTarget : relSource;
+      
+      
+      return {
+        id:        key,
+        source:    source,
+        target:    target,
+        inWeight:  Math.round(inWeight),
+        outWeight: Math.round(outWeight),
+        weight:    Math.round(weight),
+        out:       out,
+        'in':      iin
+      }
+    })
 
     const container = this.d3Container;
 
@@ -259,8 +294,8 @@ class Graph extends React.Component {
       .append('line')
       .merge(link);
 
-    link.on('mouseover', (d) => {
-      console.log(d.links.map(l => l.type).join(', '))
+    link.on('click', (d) => {
+      console.log(d)
     })
 
     this.setLinkStyle(link)
