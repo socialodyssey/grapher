@@ -43,6 +43,7 @@ class Graph extends React.Component {
     this.setLinkStyle         = this.setLinkStyle.bind(this);
     this.getNodeHighlighter   = this.getNodeHighlighter.bind(this);
     this.getNodeUnhighlighter = this.getNodeUnhighlighter.bind(this);
+    this.getNodeClicker       = this.getNodeClicker.bind(this);
     this.getHandleTick        = this.getHandleTick.bind(this);
     this.updateDisplay        = this.updateDisplay.bind(this);
     this.updateHashes         = this.updateHashes.bind(this);
@@ -126,6 +127,13 @@ class Graph extends React.Component {
 
           return 'none';
         })
+        .style('opacity', (d2) => {
+          if(d.id === d2.id || this.areConnected(d, d2)) {
+            return 1;
+          }
+
+          return 0.2;
+        })
 
       label
         .style('font-size', (d2) => {
@@ -155,6 +163,34 @@ class Graph extends React.Component {
         .style('font-size', '16px')
       
       this.setLinkStyle(link)
+    }
+  }
+
+  getNodeClicker(node, label, link) {
+    const FADE = 0.2;
+
+    return d => {
+      node
+        .style('opacity', (d2) => {
+          if(d.id === d2.id || this.areConnected(d, d2)) {
+            return 1;
+          }
+
+          return FADE;
+        })
+      
+      label
+        .style('opacity', (d2) => {
+          if(d.id === d2.id || this.areConnected(d, d2)) {
+            return 1;
+          }
+
+          return FADE;
+        })
+      
+      this.setLinkStyle(link, {
+        hlFrom: d
+      })
     }
   }
 
@@ -347,6 +383,7 @@ class Graph extends React.Component {
     node
       .on('mouseover', this.getNodeHighlighter(node, label, link))
       .on('mouseout', this.getNodeUnhighlighter(node, label, link))
+      .on('click', this.getNodeClicker(node, label, link))
 
     this.d3Simulation
       .nodes(nodes)
