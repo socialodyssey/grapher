@@ -4,7 +4,7 @@
   "private": true,
   "homepage": "https://socialodyssey.github.io/grapher",
   "devDependencies": {
-    "react-scripts": "0.8.5"
+    "react-scripts": "0.9.5"
   },
   "dependencies": {
     "classnames": "^2.2.5",
