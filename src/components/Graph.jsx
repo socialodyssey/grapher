@@ -4,7 +4,7 @@ import { getWeight } from '../lib/graphUtils';
 
 import '../style/Graph.css';
 
-const colors = {
+const COLORS = {
   circleFill:      '#5BC0EB',
   circleHlFill:    '#91d5f2',
   circleHlStroke:  '#FDE74C',
@@ -13,6 +13,8 @@ const colors = {
   lineBridge:      '#C3423F',
   text:            '#000'
 };
+
+const CLICK_FADE = 0.2;
 
 function lineEndPointX (d, radius) {
   const length = Math.sqrt(Math.pow(d.target.y - d.source.y, 2) + Math.pow(d.target.x - d.source.x, 2));
@@ -34,20 +36,23 @@ class Graph extends React.Component {
   constructor(props) {
     super(props);
     
-
     this.bridgeHash = {};
     this.linksHash = {};
+    
+    this.state = {
+      clicked: null
+    };
 
-    this.isBridge             = this.isBridge.bind(this);
-    this.areConnected         = this.areConnected.bind(this);
-    this.setLinkStyle         = this.setLinkStyle.bind(this);
-    this.getNodeHighlighter   = this.getNodeHighlighter.bind(this);
-    this.getNodeUnhighlighter = this.getNodeUnhighlighter.bind(this);
-    this.getNodeClicker       = this.getNodeClicker.bind(this);
-    this.getHandleTick        = this.getHandleTick.bind(this);
-    this.updateDisplay        = this.updateDisplay.bind(this);
-    this.updateHashes         = this.updateHashes.bind(this);
-    this.handleExport         = this.handleExport.bind(this);
+    this.isBridge        = this.isBridge.bind(this);
+    this.areConnected    = this.areConnected.bind(this);
+    this.setLinkStyle    = this.setLinkStyle.bind(this);
+    this.highlightNode   = this.highlightNode.bind(this);
+    this.unhighlightNode = this.unhighlightNode.bind(this);
+    this.getHandleTick   = this.getHandleTick.bind(this);
+    this.updateDisplay   = this.updateDisplay.bind(this);
+    this.updateHashes    = this.updateHashes.bind(this);
+    this.handleExport    = this.handleExport.bind(this);
+
   }
 
   isBridge(link) {
@@ -61,8 +66,8 @@ class Graph extends React.Component {
     return this.linksHash[a.id + '-' + b.id] || this.linksHash[b.id + '-' + a.id];
   }
     
-  setLinkStyle(link, opts={}) {
-    const { hlFrom } = opts;
+  setLinkStyle(opts={}) {
+    const hlFrom = opts.hlFrom || this.state.clicked;
     const { showBridges, showEdgeWeight, showDirection } = this.props;
 
     const weightScale = d3
@@ -73,18 +78,18 @@ class Graph extends React.Component {
       ])
       .range([1, 30])
     
-    link
+    this.d3Link
       .style('stroke', (d) => {
         if(hlFrom &&
            (d.source.id === hlFrom.id || d.target.id === hlFrom.id)) {
-          return colors.lineHl
+          return COLORS.lineHl
         }
 
         if(showBridges && this.isBridge(d)) {
-          return colors.lineBridge;
+          return COLORS.lineBridge;
         }
 
-        return colors.line
+        return COLORS.line
       })
       .style('stroke-width', (d) => {
         // Not really sure why this is here?
@@ -98,8 +103,18 @@ class Graph extends React.Component {
 
         return showEdgeWeight   ? weightScale(d.weight) : 1;
       })
+      .style('opacity', (d) => {
+        if(!this.state.clicked) {
+          return 1;
+        }
+        else if(hlFrom && (d.source.id === hlFrom.id || d.target.id === hlFrom.id)) {
+          return 1;
+        }
+
+        return CLICK_FADE;
+      })
     
-    link
+    this.d3Link 
       .style('marker-end', (d) => {
         if(showDirection) {
           return 'url(#end-arrow)'
@@ -110,88 +125,71 @@ class Graph extends React.Component {
 
   }
   
-  getNodeHighlighter(node, label, link) {
-    return d => {
-      node
-        .style('fill', (d2) => {
-          if(d.id === d2.id || this.areConnected(d, d2)) {
-            return colors.circleHlFill;
-          }
+  highlightNode(d) {
+    this.d3Node
+      .style('fill', (d2) => {
+        if(d.id === d2.id || this.areConnected(d, d2)) {
+          return COLORS.circleHlFill;
+        }
 
-          return colors.circleFill;
-        })
-        .style('stroke', (d2) => {
-          if(d.id === d2.id || this.areConnected(d, d2)) {
-            return colors.circleHlStroke;
-          }
-
-          return 'none';
-        })
-        .style('opacity', (d2) => {
-          if(d.id === d2.id || this.areConnected(d, d2)) {
-            return 1;
-          }
-
-          return 0.2;
-        })
-
-      label
-        .style('font-size', (d2) => {
-          if(d.id === d2.id || this.areConnected(d, d2)) {
-            return '23px';
-          }
-
-          return '16px'
-        })
-
-      this.setLinkStyle(link, {
-        hlFrom: d
+        return COLORS.circleFill;
       })
-    }
+      .style('stroke', (d2) => {
+        if(d.id === d2.id || this.areConnected(d, d2)) {
+          return COLORS.circleHlStroke;
+        }
+
+        return 'none';
+      })
+      .style('opacity', (d2) => {
+        if(!this.state.clicked) {
+          return 1;
+        }
+        
+        if(d.id === d2.id || this.areConnected(d, d2)) {
+          return 1;
+        }
+
+        return CLICK_FADE;
+      })
+
+    this.d3Label 
+      .style('font-size', (d2) => {
+        if(d.id === d2.id || this.areConnected(d, d2)) {
+          return '23px';
+        }
+
+        return '16px'
+      })
+      .style('opacity', (d2) => {
+        if(!this.state.clicked) {
+          return 1;
+        }
+
+        if(d.id === d2.id || this.areConnected(d, d2)) {
+          return 1;
+        }
+
+        return CLICK_FADE;
+      });
+
+    this.setLinkStyle({
+      hlFrom: d
+    })
   }
   
-  getNodeUnhighlighter(node, label, link) {
-    return d => {
-      if(this.dragging) return null;
-      
-      node
-        .style('fill', colors.circleFill)
-        .style('stroke', 'none')
+  unhighlightNode(node, label, link) {
+    this.d3Node
+      .style('fill', COLORS.circleFill)
+      .style('stroke', 'none')
+      .style('opacity', 1)
 
-      label
-        .style('font-weight', 'bold')
-        .style('font-size', '16px')
-      
-      this.setLinkStyle(link)
-    }
-  }
-
-  getNodeClicker(node, label, link) {
-    const FADE = 0.2;
-
-    return d => {
-      node
-        .style('opacity', (d2) => {
-          if(d.id === d2.id || this.areConnected(d, d2)) {
-            return 1;
-          }
-
-          return FADE;
-        })
-      
-      label
-        .style('opacity', (d2) => {
-          if(d.id === d2.id || this.areConnected(d, d2)) {
-            return 1;
-          }
-
-          return FADE;
-        })
-      
-      this.setLinkStyle(link, {
-        hlFrom: d
-      })
-    }
+    this.d3Label
+      .style('font-weight', 'bold')
+      .style('font-size', '16px')
+      .style('opacity', 1)
+    
+    this.setLinkStyle()
   }
 
   getHandleTick(link, node, label, scaleCentrality) {
@@ -333,7 +331,7 @@ class Graph extends React.Component {
       .merge(node)
       .attr('class', 'node')
       .attr('r', (d) => scaleCentrality.range(radiusRange)(d.centrality.weighted))
-      .attr('fill', (d) => colors.circleFill)
+      .attr('fill', (d) => COLORS.circleFill)
       .attr('stroke-width', (d) => scaleCentrality.range(strokeRange)(d.centrality.weighted))
       .call(this.d3Drag)
 
@@ -353,7 +351,7 @@ class Graph extends React.Component {
       .enter()
       .append('text')
       .attr('class', 'label')
-      .attr('fill', colors.text)
+      .attr('fill', COLORS.text)
       .attr('stroke', 'none')
       .attr('font-weight', 'bold')
       .text((d) => d.name)
@@ -378,12 +376,54 @@ class Graph extends React.Component {
       console.log(d)
     })
 
-    this.setLinkStyle(link)
+    // Update constructor references
+    this.d3Node  = node;
+    this.d3Label = label;
+    this.d3Link  = link;
+    
+    this.setLinkStyle()
 
     node
-      .on('mouseover', this.getNodeHighlighter(node, label, link))
-      .on('mouseout', this.getNodeUnhighlighter(node, label, link))
-      .on('click', this.getNodeClicker(node, label, link))
+      .on('mouseover', (d) => {
+        const { clicked } = this.state;
+
+        if(clicked) {
+          return;
+        }
+
+        this.highlightNode(d);
+      })
+      .on('mouseout', (d) => {
+        const { clicked } = this.state;
+
+        if(this.dragging || clicked) {
+          return;
+        }
+
+        this.unhighlightNode(d)
+      })
+      .on('click', (d) => {
+        const { clicked } = this.state;
+        
+        if(clicked && clicked.id === d.id) {
+          this.setState({
+            clicked: null
+          })
+
+        }
+        else if (clicked) {
+          this.unhighlightNode(clicked);
+          
+          this.setState({
+            clicked: d
+          });
+        }
+        else {
+          this.setState({
+            clicked: d
+          });
+        }
+      });
 
     this.d3Simulation
       .nodes(nodes)
@@ -521,16 +561,12 @@ class Graph extends React.Component {
     }
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     const { pauseSimulation } = this.props;
     
     this.updateHashes(prevProps);
 
-    this.setLinkStyle(
-      this.d3Container
-        .select('.links')
-        .selectAll('line')
-    )
+    this.setLinkStyle()
 
     if(pauseSimulation !== prevProps.pauseSimulation) {
       if(pauseSimulation) {
