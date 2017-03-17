@@ -1,7 +1,5 @@
 import React from 'react';
 import Graph from './Graph';
-import interactions from '../data/interactions';
-import entities from '../data/entities';
 import '../style/SocialGraph.css';
 
 class SocialGraph extends React.Component {
@@ -25,6 +23,8 @@ class SocialGraph extends React.Component {
   
   componentDidMount() {
     window.addEventListener('resize', this.handleResize)
+
+    this.handleResize()
   }
 
   componentWillUnmount() {
