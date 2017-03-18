@@ -139,7 +139,7 @@ class Graph extends React.Component {
           return COLORS.circleHlStroke;
         }
 
-        return 'none';
+        return '#000';
       })
       .style('opacity', (d2) => {
         if(!this.state.clicked) {
@@ -151,7 +151,7 @@ class Graph extends React.Component {
         }
 
         return CLICK_FADE;
-      })
+      });
 
     this.d3Label 
       .style('font-size', (d2) => {
@@ -181,7 +181,7 @@ class Graph extends React.Component {
   unhighlightNode(node, label, link) {
     this.d3Node
       .style('fill', COLORS.circleFill)
-      .style('stroke', 'none')
+      .style('stroke', '#000')
       .style('opacity', 1)
 
     this.d3Label
@@ -332,6 +332,7 @@ class Graph extends React.Component {
       .attr('class', 'node')
       .attr('r', (d) => scaleCentrality.range(radiusRange)(d.centrality.weighted))
       .attr('fill', (d) => COLORS.circleFill)
+      .attr('stroke', '#000')
       .attr('stroke-width', (d) => scaleCentrality.range(strokeRange)(d.centrality.weighted))
       .call(this.d3Drag)
 
@@ -354,7 +355,7 @@ class Graph extends React.Component {
       .attr('fill', COLORS.text)
       .attr('stroke', 'none')
       .attr('font-weight', 'bold')
-      .text((d) => d.name)
+      .text((d) => d.name.toUpperCase())
 
     let link = container
       .select('.links')
@@ -409,18 +410,18 @@ class Graph extends React.Component {
           this.setState({
             clicked: null
           })
-
         }
         else if (clicked) {
-          this.unhighlightNode(clicked);
           
           this.setState({
             clicked: d
+          }, () => {
           });
         }
         else {
           this.setState({
             clicked: d
+          }, () => {
           });
         }
       });
@@ -563,10 +564,19 @@ class Graph extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     const { pauseSimulation } = this.props;
-    
-    this.updateHashes(prevProps);
 
+    this.updateHashes(prevProps);
+    
     this.setLinkStyle()
+
+    if(prevState.clicked !== this.state.clicked) {
+      if(this.state.clicked) {
+        this.highlightNode(this.state.clicked);
+      }
+      else {
+        this.highlightNode(prevState.clicked)
+      }
+    }
 
     if(pauseSimulation !== prevProps.pauseSimulation) {
       if(pauseSimulation) {

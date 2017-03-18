@@ -71,7 +71,6 @@ function transformInteractions(interactions) {
 }
 
 function getBook(book) {
-  console.log('getting book %s', book);
   return axios
     .get(`interactions/book-${book}.json`)
     .then(res => res.data)
@@ -143,7 +142,9 @@ class Container extends React.Component {
     }, router(props.history.location))
 
     this.fetchData               = this.fetchData.bind(this);
+    this.filterData              = this.filterData.bind(this);
     this.flagToFilter            = debounce(this.flagToFilter.bind(this), 400);
+    this.updateUrl               = debounce(this.updateUrl.bind(this), 400);
     this.handleRangeChange       = this.handleRangeChange.bind(this);
     this.handleGraphConfigChange = this.handleGraphConfigChange.bind(this);
     this.handleChangeTab         = this.handleChangeTab.bind(this);
@@ -159,7 +160,7 @@ class Container extends React.Component {
   fetchData() {
     const maxBook             = this.state.sliderValue.max - 1;
     
-    Promise.all(
+    return Promise.all(
       range(maxBook).map(i => i + 1).map(getBook)
     )
     .then(flatten)
@@ -177,7 +178,6 @@ class Container extends React.Component {
       this.setState({
         graphData,
         filteredData: graphData,
-        ...router(this.props.history.location)
       })
     })
     
@@ -190,12 +190,26 @@ class Container extends React.Component {
     });
   }
 
+  // This is also debounced above
+  updateUrl(sliderValue) {
+    const queryString = qs.stringify({
+      fromBook: sliderValue.min,
+      toBook:   sliderValue.max
+    });
+
+    this.props.history.push({
+      search: queryString
+    })
+
+  }
+
   handleRangeChange(newValue) {
     this.setState({
       sliderValue: newValue
     })
 
     this.flagToFilter();
+    this.updateUrl(newValue);
   }
 
   handleGraphConfigChange(e) {
@@ -240,6 +254,49 @@ class Container extends React.Component {
     })
   }
 
+  filterData() {
+    const { graphData, sliderValue, graphConfig } = this.state;
+
+    const newLinks = graphData.links
+                              .filter((interaction) => {
+                                const { type } = interaction;
+
+                                if(graphConfig['show-cog'] &&
+                                   (type.lastIndexOf('COG') !== -1)) {
+                                  
+                                  return true;
+                                }
+
+                                if(graphConfig['show-inr'] &&
+                                   (type.lastIndexOf('INR') !== -1)) {
+                                  return true
+                                }
+
+                                return false
+                              })
+
+
+    // TODO: Figure out why this map is necessary.
+    // How is d3 modifying the links even when I clone the array?
+                              .map(({ source, target, ...rest }) => ({ ...rest, source: source.id || source, target: target.id || target }));
+
+    const newNodes = graphData.nodes
+                              .filter(filterNodesBy(newLinks))
+                              .map(mapCentralityFor(newLinks))
+                              .filter((node) => node.centrality.weighted > graphConfig['loweset-weight']);
+
+    const filteredData = Object.assign(
+      {},
+      graphData,
+      {
+        nodes: newNodes,
+        links: newLinks.filter(filterLinksBy(newNodes))
+      }
+    )
+
+    this.setState({ filteredData, needsFiltering: false });
+  }
+
   componentDidMount() {
     const { history } = this.props;
 
@@ -252,47 +309,7 @@ class Container extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     if(this.state.needsFiltering) {
-      const { graphData, sliderValue, graphConfig } = this.state;
-
-      const newLinks = graphData.links
-                                .filter(filterByRange('book', sliderValue.min, sliderValue.max))
-                                .filter((interaction) => {
-                                  const { type } = interaction;
-
-                                  if(graphConfig['show-cog'] &&
-                                     (type.lastIndexOf('COG') !== -1)) {
-                                    
-                                    return true;
-                                  }
-
-                                  if(graphConfig['show-inr'] &&
-                                     (type.lastIndexOf('INR') !== -1)) {
-                                    return true
-                                  }
-
-                                  return false
-                                })
-
-
-      // TODO: Figure out why this map is necessary.
-      // How is d3 modifying the links even when I clone the array?
-                                .map(({ source, target, ...rest }) => ({ ...rest, source: source.id || source, target: target.id || target }));
-
-      const newNodes = graphData.nodes
-                                .filter(filterNodesBy(newLinks))
-                                .map(mapCentralityFor(newLinks))
-                                .filter((node) => node.centrality.weighted > graphConfig['loweset-weight']);
-
-      const filteredData = Object.assign(
-        {},
-        graphData,
-        {
-          nodes: newNodes,
-          links: newLinks.filter(filterLinksBy(newNodes))
-        }
-      )
-
-      this.setState({ filteredData, needsFiltering: false });
+      this.fetchData().then(this.filterData);
     }
   }
 
