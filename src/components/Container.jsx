@@ -1,11 +1,13 @@
 import React        from 'react';
 import qs           from 'qs';
 import debounce     from 'lodash.debounce';
-import Graph        from './Graph';
-import interactions from '../data/interactions';
+import range        from 'lodash.range';
+import flatten      from 'lodash.flatten';
+import axios        from 'axios';
 import entities     from '../data/entities';
 import bridges      from '../data/bridges';
 import linenos      from '../data/linenos';
+import percentdone  from '../data/percentdone';
 
 import { mapCentralityFor } from '../lib/graphUtils';
 import Switcher             from './Switcher';
@@ -64,8 +66,20 @@ function transformInteraction({ _from, _to, _id, ...rest }) {
   }
 }
 
+function transformInteractions(interactions) {
+  return interactions.map(transformInteraction);
+}
+
+function getBook(book) {
+  console.log('getting book %s', book);
+  return axios
+    .get(`interactions/book-${book}.json`)
+    .then(res => res.data)
+    .catch(e  => console.error(e));
+}
+
 function router(location) {
-  const { pathname, search, hash } = location;
+  const { pathname, search } = location;
 
   const query = qs.parse(search.split('?')[1]);
 
@@ -113,9 +127,9 @@ class Container extends React.Component {
       },
       sliderValue: {
         min: 1,
-        max: 10
+        max: percentdone.stats.current_book + 1
       },
-      sliderMax: 10,
+      sliderMax: percentdone.stats.current_book + 1,
       graphConfig: {
         'show-bridges':     true,
         'show-edge-weight': true,
@@ -143,29 +157,30 @@ class Container extends React.Component {
   //       in future.
   //
   fetchData() {
-    const transformedInteractions = interactions.map(transformInteraction)
-    const transformedEntities     = entities.map(transformEntity).map(mapCentralityFor(transformedInteractions))
+    const maxBook             = this.state.sliderValue.max - 1;
+    
+    Promise.all(
+      range(maxBook).map(i => i + 1).map(getBook)
+    )
+    .then(flatten)
+    .then(transformInteractions)
+    .then((transformedInteractions) => {
+      const transformedEntities = entities.map(transformEntity).map(mapCentralityFor(transformedInteractions));
+      
+      const graphData = {
+        nodes:   transformedEntities,
+        links:   transformedInteractions,
+        bridges: bridges,
+        linenos: linenos
+      }
 
-    const books   = transformedInteractions.map(i => i.book)
-    const maxBook = Math.max.apply(null, books);
-
-    const graphData = {
-      nodes:   transformedEntities,
-      links:   transformedInteractions,
-      bridges: bridges,
-      linenos: linenos
-    }
-
-    this.setState({
-      graphData,
-      filteredData: graphData,
-      sliderMax: maxBook + 1,
-      sliderValue: {
-        min: 1,
-        max: maxBook + 1
-      },
-      ...router(this.props.history.location)
+      this.setState({
+        graphData,
+        filteredData: graphData,
+        ...router(this.props.history.location)
+      })
     })
+    
   }
 
   // This is debounced above
@@ -237,7 +252,6 @@ class Container extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     if(this.state.needsFiltering) {
-
       const { graphData, sliderValue, graphConfig } = this.state;
 
       const newLinks = graphData.links
