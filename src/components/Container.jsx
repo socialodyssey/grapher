@@ -18,14 +18,6 @@ import SocialStats          from './SocialStats';
 import RangeSlider          from './RangeSlider';
 import GraphConfig          from './GraphConfig';
 
-function filterByRange(key, a, b) {
-  return o => {
-    const val = o[key];
-
-    return val >= a && val < b;
-  }
-}
-
 function filterNodesBy(links) {
   return node => links.some((link) => {
     return link.target === node._id || link.source === node._id;
@@ -70,12 +62,24 @@ function transformInteractions(interactions) {
   return interactions.map(transformInteraction);
 }
 
-function getBook(book) {
-  return axios
-    .get(`interactions/book-${book}.json`)
-    .then(res => res.data)
-    .catch(e  => console.error(e));
-}
+const getBook = (function () {
+  const bookCache = {};
+
+  return book => {
+    if(bookCache[book]) {
+      return bookCache[book]
+    };
+
+    return axios
+      .get(`interactions/book-${book}.json`)
+      .then(res => {
+        bookCache[book] = res.data;
+
+        return res.data;
+      })
+      .catch(e  => console.error(e));
+  } 
+})()
 
 function router(location) {
   const { pathname, search } = location;

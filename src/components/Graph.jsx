@@ -236,6 +236,7 @@ class Graph extends React.Component {
 
   updateDisplay() {
     const { data, showDirection }   = this.props;
+    const { clicked }               = this.state;
     const { nodes, links, bridges } = data;
 
     const tmpLinkHash = {};
@@ -381,8 +382,16 @@ class Graph extends React.Component {
     this.d3Node  = node;
     this.d3Label = label;
     this.d3Link  = link;
-    
-    this.setLinkStyle()
+
+    if(clicked) {
+      // Unsure why the setTimeout is necessary
+      setTimeout(() => {
+        this.highlightNode(clicked)
+      })
+    }
+    else {
+      this.setLinkStyle()
+    }
 
     node
       .on('mouseover', (d) => {
@@ -415,13 +424,11 @@ class Graph extends React.Component {
           
           this.setState({
             clicked: d
-          }, () => {
           });
         }
         else {
           this.setState({
             clicked: d
-          }, () => {
           });
         }
       });
@@ -559,6 +566,21 @@ class Graph extends React.Component {
       links.forEach((link) => {
         this.linksHash[link.source + '-' + link.target] = true;
       })
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const nextData    = nextProps.data;
+    const { data }    = this.props;
+    const { clicked } = this.state;
+
+    if(clicked &&
+       nextData &&
+       nextData !== data &&
+       !nextData.nodes.some(node => node.id === clicked.id)) {
+      this.setState({
+        clicked: null
+      });
     }
   }
 
