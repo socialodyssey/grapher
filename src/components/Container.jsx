@@ -108,7 +108,7 @@ function router(location) {
     routeState.defaultLineGraphs = Object
       .keys(query.graph)
       .map((key) => {
-        return query.graph[key].map(id => 'Entities/' + id)
+        return query.graph[key]
       });
   }
 
