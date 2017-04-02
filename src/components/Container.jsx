@@ -260,8 +260,12 @@ class Container extends React.Component {
 
   filterData() {
     const { graphData, sliderValue, graphConfig } = this.state;
+    debugger;
 
     const newLinks = graphData.links
+                              .filter((interaction) => {
+                                return interaction.book >= sliderValue.min && interaction.book < sliderValue.max;
+                              })
                               .filter((interaction) => {
                                 const { type } = interaction;
 
