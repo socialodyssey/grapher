@@ -17,6 +17,7 @@ import LineGrapherContainer from './LineGrapherContainer';
 import SocialStats          from './SocialStats';
 import RangeSlider          from './RangeSlider';
 import GraphConfig          from './GraphConfig';
+import ToolSelector         from './ToolSelector';
 
 function filterNodesBy(links) {
   return node => links.some((link) => {
@@ -140,9 +141,11 @@ class Container extends React.Component {
         'show-cog':         true,
         'show-inr':         true,
         'pause-simulation': false,
-        'loweset-weight':   0
+        'loweset-weight':   0,
+        'tool':             'highlight'
       },
-      activeTab: 'SocialGraph'
+      activeTab: 'SocialGraph',
+      nodeBlacklist: []
     }, router(props.history.location))
 
     this.fetchData               = this.fetchData.bind(this);
@@ -152,6 +155,8 @@ class Container extends React.Component {
     this.handleRangeChange       = this.handleRangeChange.bind(this);
     this.handleGraphConfigChange = this.handleGraphConfigChange.bind(this);
     this.handleChangeTab         = this.handleChangeTab.bind(this);
+    this.handleChangeTool        = this.handleChangeTool.bind(this);
+    this.handleRemoveNode        = this.handleRemoveNode.bind(this);
   }
 
   // MILO: This used to be async, hence the overwrought design
@@ -258,9 +263,18 @@ class Container extends React.Component {
     })
   }
 
+  handleChangeTool(name) {
+    const newConfig = Object.assign({}, this.state.graphConfig, {
+      tool: name
+    });
+
+    this.setState({
+      graphConfig: newConfig
+    });
+  }
+
   filterData() {
-    const { graphData, sliderValue, graphConfig } = this.state;
-    debugger;
+    const { graphData, sliderValue, graphConfig, nodeBlacklist } = this.state;
 
     const newLinks = graphData.links
                               .filter((interaction) => {
@@ -289,6 +303,7 @@ class Container extends React.Component {
                               .map(({ source, target, ...rest }) => ({ ...rest, source: source.id || source, target: target.id || target }));
 
     const newNodes = graphData.nodes
+                              .filter(({ id }) => !nodeBlacklist.includes(id))
                               .filter(filterNodesBy(newLinks))
                               .map(mapCentralityFor(newLinks))
                               .filter((node) => node.centrality.weighted > graphConfig['loweset-weight']);
@@ -303,6 +318,17 @@ class Container extends React.Component {
     )
 
     this.setState({ filteredData, needsFiltering: false });
+  }
+
+  handleRemoveNode(id) {
+    const { nodeBlacklist } = this.state;
+    
+    this.setState({
+      nodeBlacklist: nodeBlacklist.concat([id])
+    }, () => {
+      this.flagToFilter();
+    });
+    
   }
 
   componentDidMount() {
@@ -346,6 +372,11 @@ class Container extends React.Component {
             activeTab={activeTab}
             changeHandler={this.handleChangeTab}
         />
+        
+        <ToolSelector
+            handleChangeTool={this.handleChangeTool}
+            currentVal={graphConfig['tool']}
+        />
 
         <Switcher show={activeTab}>
           <SocialGraph
@@ -354,6 +385,8 @@ class Container extends React.Component {
               showEdgeWeight={graphConfig['show-edge-weight']}
               showDirection={graphConfig['show-direction']}
               pauseSimulation={graphConfig['pause-simulation']}
+              tool={graphConfig['tool']}
+              removeNode={this.handleRemoveNode}
               data-tabkey="graph"
           />
           <LineGrapherContainer

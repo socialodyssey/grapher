@@ -52,7 +52,6 @@ class Graph extends React.Component {
     this.updateDisplay   = this.updateDisplay.bind(this);
     this.updateHashes    = this.updateHashes.bind(this);
     this.handleExport    = this.handleExport.bind(this);
-
   }
 
   isBridge(link) {
@@ -413,6 +412,11 @@ class Graph extends React.Component {
         this.unhighlightNode(d)
       })
       .on('click', (d) => {
+        if(this.props.tool === 'remove') {
+          this.props.removeNode(d.id);
+          return;
+        };
+        
         const { clicked } = this.state;
         
         if(clicked && clicked.id === d.id) {
@@ -628,11 +632,3 @@ class Graph extends React.Component {
 }
 
 export default Graph;
-
-
-
-
-
-
-
-
