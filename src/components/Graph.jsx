@@ -16,6 +16,9 @@ const COLORS = {
 
 const CLICK_FADE = 0.2;
 
+const radiusRange = [1, 70];
+const strokeRange = [2, 8];
+
 function lineEndPointX (d, radius) {
   const length = Math.sqrt(Math.pow(d.target.y - d.source.y, 2) + Math.pow(d.target.x - d.source.x, 2));
   const scale = (length - radius) / length;
@@ -48,10 +51,10 @@ class Graph extends React.Component {
     this.setLinkStyle    = this.setLinkStyle.bind(this);
     this.highlightNode   = this.highlightNode.bind(this);
     this.unhighlightNode = this.unhighlightNode.bind(this);
-    this.getHandleTick   = this.getHandleTick.bind(this);
     this.updateDisplay   = this.updateDisplay.bind(this);
     this.updateHashes    = this.updateHashes.bind(this);
     this.handleExport    = this.handleExport.bind(this);
+    this.tick            = this.tick.bind(this);
   }
 
   isBridge(link) {
@@ -191,46 +194,46 @@ class Graph extends React.Component {
     this.setLinkStyle()
   }
 
-  getHandleTick(link, node, label, scaleCentrality) {
-    return () => {
-      link
-        .attr("x1", d => d.source.x)
-        .attr("y1", d => d.source.y)
-        .attr("x2", d => {
-          if(!this.props.showDirection) {
-            return d.target.x;
-          }
+  tick() {
+    const scaleCentrality = this.d3ScaleCentrality.range(radiusRange);
+    
+    this.d3Link 
+      .attr("x1", d => d.source.x)
+      .attr("y1", d => d.source.y)
+      .attr("x2", d => {
+        if(!this.props.showDirection) {
+          return d.target.x;
+        }
 
-          const radius = scaleCentrality(d.target.centrality.weighted);
+        const radius = scaleCentrality(d.target.centrality.weighted);
 
-          const x2 = lineEndPointX(d, radius)
+        const x2 = lineEndPointX(d, radius)
 
-          return x2;
-        })
-        .attr("y2", d => {
-          if(!this.props.showDirection) {
-            return d.target.y;
-          }
-          
-          const radius = scaleCentrality(d.target.centrality.weighted);
+        return x2;
+      })
+      .attr("y2", d => {
+        if(!this.props.showDirection) {
+          return d.target.y;
+        }
+        
+        const radius = scaleCentrality(d.target.centrality.weighted);
 
-          const y2 = lineEndPointY(d, radius)
+        const y2 = lineEndPointY(d, radius)
 
-          return y2
-        });
+        return y2
+      });
 
-      node
-        .attr("cx", d => d.x)
+    this.d3Node
+      .attr("cx", d => d.x)
         .attr("cy", d => d.y);
-      
-      label 
+
+    this.d3Container.select('.labels').selectAll('.label')
         .attr("dx", d => {
           return d.x + scaleCentrality(d.centrality.weighted) + 4;
         })
         .attr("dy", d => {
           return d.y + 6
         });
-    }
   }
 
   updateDisplay() {
@@ -297,13 +300,6 @@ class Graph extends React.Component {
 
     const container = this.d3Container;
 
-    //
-    // Not sure why this is stll necessary?
-    // I think there's something with my merge logic?
-    //
-    container.select('.nodes').selectAll('.node').remove();
-    container.select('.labels').selectAll('.label').remove();
-
     const scaleCentrality = d3
       .scaleLinear()
       .domain([
@@ -311,8 +307,7 @@ class Graph extends React.Component {
         d3.max(nodes, (d) => d.centrality.weighted)
       ])
 
-    const radiusRange = [1, 70];
-    const strokeRange = [2, 8];
+    this.d3ScaleCentrality = scaleCentrality;
 
     let node = container
       .select('.nodes')
@@ -438,13 +433,12 @@ class Graph extends React.Component {
       });
 
     this.d3Simulation
-      .nodes(nodes)
-      .on('tick', this.getHandleTick(link, node, label, scaleCentrality.range(radiusRange)));
+      .nodes(nodes);
 
     this.d3Simulation
         .force('link')
         .links(this.mergedLinks);
-    
+
     this.d3Simulation.alpha(1).restart();
   }
   
@@ -506,6 +500,7 @@ class Graph extends React.Component {
                           .force('charge', d3.forceManyBody().strength(-3000))
                           .force('center', d3.forceCenter(width / 2, height / 2))
                           .velocityDecay(0.8)
+                          .on('tick', this.tick);
 
     this.d3Drag = d3.drag()
                     .on('start', (d) => {
