@@ -33,7 +33,9 @@ class SocialGraph extends React.Component {
   
   render() {
     const { width, height } = this.state;
-    
+
+    const { data } = this.props
+
     return (
       <div className="SocialGraph" style={{
         overflow: 'hidden',
@@ -42,7 +44,7 @@ class SocialGraph extends React.Component {
       }}>
         <Graph
             {...this.props}
-            data={this.props.data}
+            data={data}
             width={width}
             height={height}
         />

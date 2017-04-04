@@ -195,9 +195,13 @@ class Graph extends React.Component {
   }
 
   tick() {
+    const svg    = d3.select(this.refs['svg']);
+    const width  = parseInt(svg.attr('width'));
+    const height = parseInt(svg.attr('height'));
+    
     const scaleCentrality = this.d3ScaleCentrality.range(radiusRange);
     
-    this.d3Link 
+    this.d3Container.select('.links').selectAll('line')
       .attr("x1", d => d.source.x)
       .attr("y1", d => d.source.y)
       .attr("x2", d => {
@@ -223,8 +227,8 @@ class Graph extends React.Component {
         return y2
       });
 
-    this.d3Node
-      .attr("cx", d => d.x)
+    this.d3Container.select('.nodes').selectAll('.node')
+        .attr("cx", d => d.x)
         .attr("cy", d => d.y);
 
     this.d3Container.select('.labels').selectAll('.label')
@@ -498,7 +502,8 @@ class Graph extends React.Component {
     this.d3Simulation = d3.forceSimulation()
                           .force('link', d3.forceLink().id((d) => d.id))
                           .force('charge', d3.forceManyBody().strength(-3000))
-                          .force('center', d3.forceCenter(width / 2, height / 2))
+                          .force('x', d3.forceX(width / 2))
+                          .force('y', d3.forceY(height / 2))
                           .velocityDecay(0.8)
                           .on('tick', this.tick);
 
@@ -619,7 +624,7 @@ class Graph extends React.Component {
   render() {
     return (
       <div>
-        <svg className="Graph" id="foobarzee"ref="svg" width={this.props.width} height={this.props.height} />
+        <svg className="Graph" ref="svg" width={this.props.width} height={this.props.height} />
         <button className="btn export-btn" onClick={this.handleExport}>Export</button>
       </div>
     )
