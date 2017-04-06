@@ -512,9 +512,9 @@ class Graph extends React.Component {
 
     this.d3Simulation = d3.forceSimulation()
                           .force('charge', d3.forceManyBody().strength(-3000))
-                          .force('link', d3.forceLink().id((d) => d.id).strength((d) => {
+                          .force('link', d3.forceLink().id((d) => d.id)/*.strength((d) => {
                             return 1 - this.d3ScaleForce.range(forceRange)(d.outWeight + d.inWeight);
-                          }))
+                            })*/)
                           .force('x', d3.forceX(width / 2))
                           .force('y', d3.forceY(height / 2))
                           .velocityDecay(0.8)
