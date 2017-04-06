@@ -18,6 +18,7 @@ const CLICK_FADE = 0.2;
 
 const radiusRange = [1, 70];
 const strokeRange = [2, 8];
+const forceRange  = [0.7, 1];
 
 function lineEndPointX (d, radius) {
   const length = Math.sqrt(Math.pow(d.target.y - d.source.y, 2) + Math.pow(d.target.x - d.source.x, 2));
@@ -309,9 +310,18 @@ class Graph extends React.Component {
       .domain([
         0,
         d3.max(nodes, (d) => d.centrality.weighted)
-      ])
+      ]);
 
     this.d3ScaleCentrality = scaleCentrality;
+
+    const scaleForce = d3
+      .scaleLinear()
+      .domain([
+        0,
+        d3.max(this.mergedLinks, (d) => d.outWeight + d.inWeight)
+      ]);
+
+    this.d3ScaleForce = scaleForce
 
     let node = container
       .select('.nodes')
@@ -436,6 +446,7 @@ class Graph extends React.Component {
         }
       });
 
+
     this.d3Simulation
       .nodes(nodes);
 
@@ -500,8 +511,10 @@ class Graph extends React.Component {
     svg.call(zoom)
 
     this.d3Simulation = d3.forceSimulation()
-                          .force('link', d3.forceLink().id((d) => d.id))
                           .force('charge', d3.forceManyBody().strength(-3000))
+                          .force('link', d3.forceLink().id((d) => d.id).strength((d) => {
+                            return 1 - this.d3ScaleForce.range(forceRange)(d.outWeight + d.inWeight);
+                          }))
                           .force('x', d3.forceX(width / 2))
                           .force('y', d3.forceY(height / 2))
                           .velocityDecay(0.8)
