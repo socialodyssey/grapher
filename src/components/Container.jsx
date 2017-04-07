@@ -150,7 +150,7 @@ class Container extends React.Component {
 
     this.fetchData               = this.fetchData.bind(this);
     this.filterData              = this.filterData.bind(this);
-    this.flagToFilter            = debounce(this.flagToFilter.bind(this), 400);
+    this.flagToFilter            = debounce(this.flagToFilter.bind(this), 800);
     this.updateUrl               = debounce(this.updateUrl.bind(this), 400);
     this.handleRangeChange       = this.handleRangeChange.bind(this);
     this.handleGraphConfigChange = this.handleGraphConfigChange.bind(this);
@@ -372,11 +372,13 @@ class Container extends React.Component {
             activeTab={activeTab}
             changeHandler={this.handleChangeTab}
         />
-        
-        <ToolSelector
-            handleChangeTool={this.handleChangeTool}
-            currentVal={graphConfig['tool']}
-        />
+
+        {(activeTab === 'graph') &&
+          <ToolSelector
+              handleChangeTool={this.handleChangeTool}
+              currentVal={graphConfig['tool']}
+          />
+        }
 
         <Switcher show={activeTab}>
           <SocialGraph

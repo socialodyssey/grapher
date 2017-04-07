@@ -52,7 +52,6 @@ h1,h2,h3,h4,h5 {
     text-transform: uppercase;
     font-weight: bold;
     height: 2.5em;
-    width: 6em;
     min-width: 4em;
     margin: 1em;
 }
@@ -89,6 +88,7 @@ h1,h2,h3,h4,h5 {
 
 .btn-group.-verticle .btn {
     display: block;
+    width: 6em;
 }
 
 .btn-group.-verticle .btn+.btn {
