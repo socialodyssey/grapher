@@ -86,9 +86,13 @@ h1,h2,h3,h4,h5 {
     border-left: none;
 }
 
+.btn-group.-verticle {
+  margin-left: 0.7em;
+}
+
 .btn-group.-verticle .btn {
     display: block;
-    width: 6em;
+    width: 7em;
 }
 
 .btn-group.-verticle .btn+.btn {
