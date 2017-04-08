@@ -28,11 +28,11 @@ function filterNodesBy(links) {
 function filterLinksBy(nodes) {
   return link => {
     const targetIncluded = nodes.some((node) => {
-      return link.target === node._id
+      return (link.target.id || link.target) === node._id
     })
     
     const sourceIncluded = nodes.some((node) => {
-      return link.source === node._id
+      return (link.source.id || link.source) === node._id
     })
 
     return sourceIncluded && targetIncluded;
@@ -297,23 +297,26 @@ class Container extends React.Component {
                                 return false
                               })
 
-
-    // TODO: Figure out why this map is necessary.
-    // How is d3 modifying the links even when I clone the array?
+                              // TODO: Figure out why this map is necessary.
+                              // How is d3 modifying the links even when I clone the array?
                               .map(({ source, target, ...rest }) => ({ ...rest, source: source.id || source, target: target.id || target }));
 
     const newNodes = graphData.nodes
                               .filter(({ id }) => !nodeBlacklist.includes(id))
                               .filter(filterNodesBy(newLinks))
-                              .map(mapCentralityFor(newLinks))
-                              .filter((node) => node.centrality.weighted > graphConfig['loweset-weight']);
+
+    const finalLinks = newLinks.filter(filterLinksBy(newNodes));
+    const finalNodes = newNodes
+      .filter(filterNodesBy(finalLinks))
+      .map(mapCentralityFor(finalLinks))
+      .filter((node) => node.centrality.weighted > graphConfig['loweset-weight']);
 
     const filteredData = Object.assign(
       {},
       graphData,
       {
-        nodes: newNodes,
-        links: newLinks.filter(filterLinksBy(newNodes))
+        nodes: finalNodes,
+        links: finalLinks
       }
     )
 

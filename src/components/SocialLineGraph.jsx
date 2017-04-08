@@ -44,6 +44,11 @@ class SocialLineGraph extends React.Component {
     
     const node = nodes.filter((node) => node.id === nodeID)[0];
 
+    if(!node) {
+      console.info('not plotting absent character: ', nodeID)
+      return { data: [] };
+    }
+
     const getCentrality = createCentralityGetter(links);
     
     const newData = links
