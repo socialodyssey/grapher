@@ -39,7 +39,7 @@ function GraphConfig({ handleChange, current }) {
             handleChange={handleChange} />
         <Checkbox
             name="show-people"
-            displayName="Show people"
+            displayName="Show mortals"
             currentVal={current['show-people']}
             handleChange={handleChange} />
         <h2>Advanced</h2>
