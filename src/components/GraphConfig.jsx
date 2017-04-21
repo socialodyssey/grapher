@@ -32,6 +32,16 @@ function GraphConfig({ handleChange, current }) {
             displayName="Show INR events"
             currentVal={current['show-inr']}
             handleChange={handleChange} />
+        <Checkbox
+            name="show-gods"
+            displayName="Show gods"
+            currentVal={current['show-gods']}
+            handleChange={handleChange} />
+        <Checkbox
+            name="show-people"
+            displayName="Show people"
+            currentVal={current['show-people']}
+            handleChange={handleChange} />
         <h2>Advanced</h2>
         <Checkbox
             name="pause-simulation"

@@ -511,7 +511,7 @@ class Graph extends React.Component {
     svg.call(zoom)
 
     this.d3Simulation = d3.forceSimulation()
-                          .force('charge', d3.forceManyBody().strength(-3000))
+                          .force('charge', d3.forceManyBody().strength(-5000))
                           .force('link', d3.forceLink().id((d) => d.id)/*.strength((d) => {
                             return 1 - this.d3ScaleForce.range(forceRange)(d.outWeight + d.inWeight);
                             })*/)
@@ -556,6 +556,8 @@ class Graph extends React.Component {
     if(!source.match(/^<svg[^>]+"http\:\/\/www\.w3\.org\/1999\/xlink"/)){
       source = source.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
     }
+
+    source = "<style>@import url('https://fonts.googleapis.com/css?family=Lato'); svg { font-family: Lato; }</style>" + source
     source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
 
     var url = "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(source);

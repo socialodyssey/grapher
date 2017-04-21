@@ -140,8 +140,10 @@ class Container extends React.Component {
         'show-direction':   false,
         'show-cog':         true,
         'show-inr':         true,
+        'show-gods':        true,
+        'show-people':      true,
         'pause-simulation': false,
-        'loweset-weight':   0,
+        'lowest-weight':    50,
         'tool':             'highlight'
       },
       activeTab: 'SocialGraph',
@@ -244,6 +246,8 @@ class Container extends React.Component {
     // so I'm filtering the data up here.
     //
     const needsFiltering = (keyChanged('show-cog', oldConfig, newConfig) ||
+                            keyChanged('show-gods', oldConfig, newConfig) ||
+                            keyChanged('show-people', oldConfig, newConfig) ||
                             keyChanged('show-inr', oldConfig, newConfig));
     
     this.setState({
@@ -302,14 +306,24 @@ class Container extends React.Component {
                               .map(({ source, target, ...rest }) => ({ ...rest, source: source.id || source, target: target.id || target }));
 
     const newNodes = graphData.nodes
-                              .filter(({ id }) => !nodeBlacklist.includes(id))
+                              .filter(({ id, type }) => {
+                                if(!graphConfig['show-people'] && type.lastIndexOf('PER') !== -1) {
+                                  return false;
+                                }
+
+                                if(!graphConfig['show-gods'] && type.lastIndexOf('GOD') !== -1) {
+                                  return false;
+                                }
+                                
+                                return !nodeBlacklist.includes(id)
+                              })
                               .filter(filterNodesBy(newLinks))
+                              .filter((node) => node.centrality.weighted > graphConfig['lowest-weight'])
 
     const finalLinks = newLinks.filter(filterLinksBy(newNodes));
     const finalNodes = newNodes
       .filter(filterNodesBy(finalLinks))
       .map(mapCentralityFor(finalLinks))
-      .filter((node) => node.centrality.weighted > graphConfig['loweset-weight']);
 
     const filteredData = Object.assign(
       {},
