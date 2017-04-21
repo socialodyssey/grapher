@@ -557,7 +557,6 @@ class Graph extends React.Component {
       source = source.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
     }
 
-    source = "<style>@import url('https://fonts.googleapis.com/css?family=Lato'); svg { font-family: Lato; }</style>" + source
     source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
 
     var url = "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(source);
