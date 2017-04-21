@@ -143,7 +143,7 @@ class Container extends React.Component {
         'show-gods':        true,
         'show-people':      true,
         'pause-simulation': false,
-        'lowest-weight':    50,
+        'lowest-weight':    0,
         'tool':             'highlight'
       },
       activeTab: 'SocialGraph',
