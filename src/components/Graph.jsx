@@ -4,6 +4,7 @@ import { getWeight } from '../lib/graphUtils';
 
 import '../style/Graph.css';
 
+// These consts should probably really be props!
 const COLORS = {
   circleFill:      '#5BC0EB',
   circleHlFill:    '#91d5f2',
@@ -15,6 +16,8 @@ const COLORS = {
 };
 
 const CLICK_FADE = 0.2;
+
+const FORCE_STRENGTH = -3000;
 
 const radiusRange = [1, 70];
 const strokeRange = [2, 8];
@@ -511,7 +514,7 @@ class Graph extends React.Component {
     svg.call(zoom)
 
     this.d3Simulation = d3.forceSimulation()
-                          .force('charge', d3.forceManyBody().strength(-5000))
+                          .force('charge', d3.forceManyBody().strength(FORCE_STRENGTH))
                           .force('link', d3.forceLink().id((d) => d.id)/*.strength((d) => {
                             return 1 - this.d3ScaleForce.range(forceRange)(d.outWeight + d.inWeight);
                             })*/)
@@ -633,6 +636,10 @@ class Graph extends React.Component {
     }
 
     this.updateDisplay();
+  }
+
+  componentWillUnmount() {
+    this.d3Simulation.stop()
   }
 
   render() {
