@@ -363,6 +363,7 @@ class Graph extends React.Component {
     label = label
       .enter()
       .append('text')
+      .merge(label)
       .attr('class', 'label')
       .attr('fill', COLORS.text)
       .attr('stroke', 'none')
@@ -567,7 +568,8 @@ class Graph extends React.Component {
   }
 
   updateHashes(prevProps) {
-    const { links, bridges } = this.props.data;
+    const { links, bridges } = this.props.data
+
 
     if(!bridges) return;
 
