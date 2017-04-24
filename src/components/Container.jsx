@@ -333,7 +333,6 @@ class Container extends React.Component {
         links: finalLinks
       }
     )
-
     this.setState({ filteredData, needsFiltering: false });
   }
 
@@ -423,11 +422,9 @@ class Container extends React.Component {
               max={this.state.sliderMax}
               value={sliderValue} />
 
-          {(activeTab === 'graph') &&
             <GraphConfig
-                handleChange={this.handleGraphConfigChange}
-                current={graphConfig} />
-          }
+              handleChange={this.handleGraphConfigChange}
+              current={graphConfig} />
 
           {(activeTab === 'graph') &&
             <SocialStats

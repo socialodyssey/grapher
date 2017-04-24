@@ -51,7 +51,7 @@ class SocialLineGraph extends React.Component {
 
     const getCentrality = createCentralityGetter(links);
     
-    const newData = links
+    let newData = links
       .filter((link) => {
         const source = link.source.id || link.source;
         const target = link.target.id || link.target;

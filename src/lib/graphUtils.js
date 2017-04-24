@@ -41,7 +41,7 @@ function filterForLines(lines) {
       return true;
     }
 
-    const linkLine1D = get1DLine(link.book, link.selection.to_line);
+    const linkLine1D = get1DLine(link.book, link.selection.from_line);
 
     if(typeof lines === 'number') {
       return linkLine1D <= lines;
@@ -62,7 +62,7 @@ export function mapCentralityFor(interactions) {
       .filter((link) =>
         (
           ((link.target.id || link.target) === entity.id)))
-    
+
     const alpha = 0.5;
     
     const outWeight = getTotalWeight(outs);
@@ -102,7 +102,7 @@ export function createCentralityGetter(interactions) {
     if(!calculatedLines[eID]) {
       calculatedLines[eID] = {}
     }
-    
+
     if(calculatedLines[eID] && calculatedLines[eID][lineKey]) {
       return calculatedLines[eID][lineKey];
     }

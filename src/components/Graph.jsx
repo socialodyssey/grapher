@@ -17,7 +17,7 @@ const COLORS = {
 
 const CLICK_FADE = 0.2;
 
-const FORCE_STRENGTH = -3000;
+const FORCE_STRENGTH = -5000;
 
 const radiusRange = [1, 70];
 const strokeRange = [2, 8];
