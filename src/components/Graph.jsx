@@ -387,7 +387,8 @@ class Graph extends React.Component {
       .merge(link);
 
     link.on('click', (d) => {
-      console.log(d)
+      this.props.handleInteractionClick(d);
+      console.log(d);
     })
 
     // Update constructor references

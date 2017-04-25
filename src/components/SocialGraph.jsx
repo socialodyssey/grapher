@@ -1,5 +1,7 @@
-import React from 'react';
-import Graph from './Graph';
+import React            from 'react';
+import Graph            from './Graph';
+import InteractionModal from './InteractionModal';
+
 import '../style/SocialGraph.css';
 
 class SocialGraph extends React.Component {
@@ -7,17 +9,25 @@ class SocialGraph extends React.Component {
     super(props);
 
     this.state = {
-      width: document.body.clientWidth,
-      height: window.innerHeight * 0.80
+      width:                document.body.clientWidth,
+      height:               window.innerHeight * 0.80,
+      interactionModalOpen: false
     }
 
-    this.handleResize = this.handleResize.bind(this);
+    this.handleResize           = this.handleResize.bind(this);
+    this.handleInteractionClick = this.handleInteractionClick.bind(this);
   }
 
   handleResize() {
     this.setState({
       width: document.body.clientWidth,
       height: window.innerHeight * 0.80
+    })
+  }
+
+  handleInteractionClick(interaction) {
+    this.setState({
+      selectedInteraction: interaction
     })
   }
   
@@ -32,7 +42,7 @@ class SocialGraph extends React.Component {
   }
   
   render() {
-    const { width, height } = this.state;
+    const { width, height, selectedInteraction } = this.state;
 
     const { data } = this.props
 
@@ -47,7 +57,9 @@ class SocialGraph extends React.Component {
             data={data}
             width={width}
             height={height}
+            handleInteractionClick={this.handleInteractionClick}
         />
+        <InteractionModal isOpen={!!selectedInteraction} selectedInteraction={selectedInteraction} handleClose={() => this.setState({ selectedInteraction: null })}/>
       </div>
     )
   }

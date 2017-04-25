@@ -19,7 +19,8 @@
     "qs": "^6.3.1",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
-    "react-input-range": "^1.0.2"
+    "react-input-range": "^1.0.2",
+    "react-modal": "^1.7.7"
   },
   "scripts": {
     "start": "react-scripts start",

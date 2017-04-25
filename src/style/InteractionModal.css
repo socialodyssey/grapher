@@ -1,0 +1,62 @@
+.InteractionModal {
+    border: 4px solid black;
+    width: 60%;
+    margin: auto;
+    margin-top: 5em;
+    background-color: #fff;
+    outline: none;
+}
+
+.InteractionModal .title {
+    text-align: center;
+    border-bottom: 4px solid black;
+    cursor: pointer;
+}
+
+.InteractionModal .info {
+    text-align: center;
+}
+
+.InteractionModal .info-bite {
+    font-family: Lato;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.InteractionModal .info-bite:after {
+    display: block;
+    margin: 1em auto;
+    width: 2em;
+    height: 4px;
+    Background-color: #000;
+    content: ' ';
+}
+
+.InteractionModal .info-bite:last-child:after {
+    display: block;
+    margin: 0;
+    width: 0;
+    height: 0;
+    content: '';
+}
+
+.InteractionModal .interactions {
+    font-family: Lato;
+    text-align: left;
+    max-height: 50vh;
+    overflow-y: scroll;
+}
+
+.InteractionModal .interaction {
+    padding-left: 1em;
+}
+
+.InteractionModal .line-no {
+    text-transform: uppercase;
+    padding-right: 1em;
+    border-right: 4px solid black;
+}
+
+.InteractionModal .type {
+    padding-left: 1em;
+}
