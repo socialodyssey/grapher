@@ -130,7 +130,7 @@ class SocialLineGraph extends React.Component {
       <div className="SocialLineGraph">
         <div className="graph-info">
           <h2 className="graph-title">{title}</h2>
-          <div className="close-btn" onClick={onClose}>(Change)</div>
+          <div className="close-btn" onClick={onClose} style={{ opacity: 0 }}>(Change)</div>
         </div>
         <LineGraph
             width={width}

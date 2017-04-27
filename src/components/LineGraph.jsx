@@ -1,7 +1,7 @@
 import React from 'react';
 import * as d3 from 'd3';
 
-const margin = {top: 20, right: 90, bottom: 30, left: 50};
+const margin = { top: 20, right: 90, bottom: 30, left: 50 };
 
 const lineColors = [
   '#5BC0EB',
